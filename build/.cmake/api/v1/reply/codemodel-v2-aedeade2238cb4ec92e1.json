@@ -6,6 +6,10 @@
 			[
 				{
 					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
 					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
@@ -16,8 +20,37 @@
 					"targetIndexes" : 
 					[
 						0,
-						1,
 						2
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						2
+					],
+					"jsonFile" : "directory-src-Debug-c94b7c2814d5a21df52c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src"
+				},
+				{
+					"build" : "src/HelloWorld",
+					"jsonFile" : "directory-src.HelloWorld-Debug-e5a679cb836c61abb595.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/HelloWorld",
+					"targetIndexes" : 
+					[
+						1
 					]
 				}
 			],
@@ -27,7 +60,9 @@
 				{
 					"directoryIndexes" : 
 					[
-						0
+						0,
+						1,
+						2
 					],
 					"name" : "OpenCLProject",
 					"targetIndexes" : 
@@ -43,15 +78,15 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-ALL_BUILD-Debug-2c95bc9c9aaad83183a3.json",
+					"jsonFile" : "target-ALL_BUILD-Debug-75dbe5577f8b87a06ea9.json",
 					"name" : "ALL_BUILD",
 					"projectIndex" : 0
 				},
 				{
-					"directoryIndex" : 0,
-					"id" : "OpenCLProject::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-OpenCLProject-Debug-3450db768423c9df18ea.json",
-					"name" : "OpenCLProject",
+					"directoryIndex" : 2,
+					"id" : "HelloWorld::@856aae2dd00561b3faf2",
+					"jsonFile" : "target-HelloWorld-Debug-f7cfcd8c0e261c8a9a0e.json",
+					"name" : "HelloWorld",
 					"projectIndex" : 0
 				},
 				{
@@ -68,6 +103,10 @@
 			[
 				{
 					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
 					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
@@ -78,8 +117,37 @@
 					"targetIndexes" : 
 					[
 						0,
-						1,
 						2
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						2
+					],
+					"jsonFile" : "directory-src-Release-c94b7c2814d5a21df52c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src"
+				},
+				{
+					"build" : "src/HelloWorld",
+					"jsonFile" : "directory-src.HelloWorld-Release-e5a679cb836c61abb595.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/HelloWorld",
+					"targetIndexes" : 
+					[
+						1
 					]
 				}
 			],
@@ -89,7 +157,9 @@
 				{
 					"directoryIndexes" : 
 					[
-						0
+						0,
+						1,
+						2
 					],
 					"name" : "OpenCLProject",
 					"targetIndexes" : 
@@ -105,15 +175,15 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-ALL_BUILD-Release-2c95bc9c9aaad83183a3.json",
+					"jsonFile" : "target-ALL_BUILD-Release-75dbe5577f8b87a06ea9.json",
 					"name" : "ALL_BUILD",
 					"projectIndex" : 0
 				},
 				{
-					"directoryIndex" : 0,
-					"id" : "OpenCLProject::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-OpenCLProject-Release-b77f8244d571e43db08d.json",
-					"name" : "OpenCLProject",
+					"directoryIndex" : 2,
+					"id" : "HelloWorld::@856aae2dd00561b3faf2",
+					"jsonFile" : "target-HelloWorld-Release-f01616b6cd12f56a6683.json",
+					"name" : "HelloWorld",
 					"projectIndex" : 0
 				},
 				{
@@ -130,6 +200,10 @@
 			[
 				{
 					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
 					"jsonFile" : "directory-.-MinSizeRel-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
@@ -140,8 +214,37 @@
 					"targetIndexes" : 
 					[
 						0,
-						1,
 						2
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						2
+					],
+					"jsonFile" : "directory-src-MinSizeRel-c94b7c2814d5a21df52c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src"
+				},
+				{
+					"build" : "src/HelloWorld",
+					"jsonFile" : "directory-src.HelloWorld-MinSizeRel-e5a679cb836c61abb595.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/HelloWorld",
+					"targetIndexes" : 
+					[
+						1
 					]
 				}
 			],
@@ -151,7 +254,9 @@
 				{
 					"directoryIndexes" : 
 					[
-						0
+						0,
+						1,
+						2
 					],
 					"name" : "OpenCLProject",
 					"targetIndexes" : 
@@ -167,15 +272,15 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-ALL_BUILD-MinSizeRel-2c95bc9c9aaad83183a3.json",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-75dbe5577f8b87a06ea9.json",
 					"name" : "ALL_BUILD",
 					"projectIndex" : 0
 				},
 				{
-					"directoryIndex" : 0,
-					"id" : "OpenCLProject::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-OpenCLProject-MinSizeRel-9051425fbf2bea4cb20c.json",
-					"name" : "OpenCLProject",
+					"directoryIndex" : 2,
+					"id" : "HelloWorld::@856aae2dd00561b3faf2",
+					"jsonFile" : "target-HelloWorld-MinSizeRel-a63217852b6712a41add.json",
+					"name" : "HelloWorld",
 					"projectIndex" : 0
 				},
 				{
@@ -192,6 +297,10 @@
 			[
 				{
 					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
 					"jsonFile" : "directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
@@ -202,8 +311,37 @@
 					"targetIndexes" : 
 					[
 						0,
-						1,
 						2
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						2
+					],
+					"jsonFile" : "directory-src-RelWithDebInfo-c94b7c2814d5a21df52c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src"
+				},
+				{
+					"build" : "src/HelloWorld",
+					"jsonFile" : "directory-src.HelloWorld-RelWithDebInfo-e5a679cb836c61abb595.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/HelloWorld",
+					"targetIndexes" : 
+					[
+						1
 					]
 				}
 			],
@@ -213,7 +351,9 @@
 				{
 					"directoryIndexes" : 
 					[
-						0
+						0,
+						1,
+						2
 					],
 					"name" : "OpenCLProject",
 					"targetIndexes" : 
@@ -229,15 +369,15 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-2c95bc9c9aaad83183a3.json",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-75dbe5577f8b87a06ea9.json",
 					"name" : "ALL_BUILD",
 					"projectIndex" : 0
 				},
 				{
-					"directoryIndex" : 0,
-					"id" : "OpenCLProject::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-OpenCLProject-RelWithDebInfo-cc76adcfa4da40ffa0c3.json",
-					"name" : "OpenCLProject",
+					"directoryIndex" : 2,
+					"id" : "HelloWorld::@856aae2dd00561b3faf2",
+					"jsonFile" : "target-HelloWorld-RelWithDebInfo-8d40408ed53be97ee57b.json",
+					"name" : "HelloWorld",
 					"projectIndex" : 0
 				},
 				{

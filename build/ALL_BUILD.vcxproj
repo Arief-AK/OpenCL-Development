@@ -173,9 +173,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\Arief\source\OpenCL\HelloProject\build\OpenCLProject.vcxproj">
-      <Project>{B5F64D4D-6ECC-3030-8006-1CDE284A3EF8}</Project>
-      <Name>OpenCLProject</Name>
+    <ProjectReference Include="C:\Users\Arief\source\OpenCL\HelloProject\build\src\HelloWorld\HelloWorld.vcxproj">
+      <Project>{9CBBFFC4-7CDD-3733-8C99-4C092507AF46}</Project>
+      <Name>HelloWorld</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

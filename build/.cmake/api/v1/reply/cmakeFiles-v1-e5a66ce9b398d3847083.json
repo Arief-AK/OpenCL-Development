@@ -139,6 +139,12 @@
 			"isCMake" : true,
 			"isExternal" : true,
 			"path" : "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.29/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"path" : "src/CMakelists.txt"
+		},
+		{
+			"path" : "src/HelloWorld/CMakeLists.txt"
 		}
 	],
 	"kind" : "cmakeFiles",
