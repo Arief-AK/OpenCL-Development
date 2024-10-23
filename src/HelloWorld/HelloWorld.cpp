@@ -41,7 +41,47 @@ cl_context CreateContext(){
     return context;
 }
 
-cl_command_queue CreateCommandQueue(cl_context context, cl_device_id* device){}
+cl_command_queue CreateCommandQueue(cl_context context, cl_device_id* device){
+    cl_int errNum;
+    cl_device_id *devices;
+    cl_command_queue commandQueue = NULL;
+    size_t deviceBufferSize = -1;
+
+    // Get the size of the buffer
+    errNum = clGetContextInfo(context, CL_CONTEXT_DEVICES, 0, NULL, &deviceBufferSize);
+    if(errNum != CL_SUCCESS){
+        std::cout << "Failed to get context information" << std::endl;
+        return NULL;
+    }
+
+    // Check the buffer size
+    if (deviceBufferSize <= 0){
+        std::cerr << "No devices available.";
+        return NULL;
+    }
+
+    // Allocate memory for the devices buffer
+    devices = new cl_device_id[deviceBufferSize / sizeof(cl_device_id)];
+    errNum = clGetContextInfo(context, CL_CONTEXT_DEVICES, deviceBufferSize, devices, NULL);
+    if (errNum != CL_SUCCESS){
+        delete [] devices;
+        std::cerr << "Failed to get device IDs";
+        return NULL;
+    }
+
+    // Choose to use the first available device
+    commandQueue = clCreateCommandQueue(context, devices[0], 0, NULL);
+    if (commandQueue == NULL){
+        delete [] devices;
+        std::cerr << "Failed to create commandQueue for device 0";
+        return NULL;
+    }
+
+    // Set the first avaialable device back to the host and return the command queue
+    *device = devices[0];
+    delete[] devices;
+    return commandQueue;
+}
 
 void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernal, cl_mem memObjects[3]){}
 
