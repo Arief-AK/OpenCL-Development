@@ -1090,90 +1090,6 @@
 			"value" : "FALSE"
 		},
 		{
-			"name" : "OPENCL_VERSION_1_0",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Have symbol CL_VERSION_1_0"
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : ""
-		},
-		{
-			"name" : "OPENCL_VERSION_1_1",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Have symbol CL_VERSION_1_1"
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : ""
-		},
-		{
-			"name" : "OPENCL_VERSION_1_2",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Have symbol CL_VERSION_1_2"
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : ""
-		},
-		{
-			"name" : "OPENCL_VERSION_2_0",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Have symbol CL_VERSION_2_0"
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : ""
-		},
-		{
-			"name" : "OPENCL_VERSION_2_1",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Have symbol CL_VERSION_2_1"
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : ""
-		},
-		{
-			"name" : "OPENCL_VERSION_2_2",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Have symbol CL_VERSION_2_2"
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : ""
-		},
-		{
-			"name" : "OPENCL_VERSION_3_0",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Have symbol CL_VERSION_3_0"
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : ""
-		},
-		{
 			"name" : "OpenCLProject_BINARY_DIR",
 			"properties" : 
 			[
@@ -1208,30 +1124,6 @@
 			],
 			"type" : "STATIC",
 			"value" : "C:/Users/Arief/source/OpenCL/HelloProject"
-		},
-		{
-			"name" : "OpenCL_INCLUDE_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Path to a file."
-				}
-			],
-			"type" : "PATH",
-			"value" : "OpenCL_INCLUDE_DIR-NOTFOUND"
-		},
-		{
-			"name" : "OpenCL_LIBRARY",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Path to a library."
-				}
-			],
-			"type" : "FILEPATH",
-			"value" : "OpenCL_LIBRARY-NOTFOUND"
 		}
 	],
 	"kind" : "cache",
