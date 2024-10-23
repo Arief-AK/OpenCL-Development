@@ -143,7 +143,29 @@ bool CreateMemoryObjects(cl_context context, cl_mem memObjects[3], float* a, flo
     return true;
 }
 
-void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernal, cl_mem memObjects[3]){}
+void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernel, cl_mem memObjects[3]){
+    // Free all memory objects
+    for (int i = 0; i < 3; i++){
+        if (memObjects[i] != 0)
+            clReleaseMemObject(memObjects[i]);
+    }
+
+    // Free the command queues
+    if (commandQueue != 0)
+        clReleaseCommandQueue(commandQueue);
+
+    // Free the kernels
+    if (kernel != 0)
+        clReleaseKernel(kernel);
+
+    // Free the program objects
+    if (program != 0)
+        clReleaseProgram(program);
+
+    // Free the context
+    if (context != 0)
+        clReleaseContext(context);
+}
 
 int main(int, char**){    
     // Initialise properties of OpenCL
