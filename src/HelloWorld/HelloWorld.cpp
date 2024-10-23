@@ -127,6 +127,22 @@ cl_program CreateProgram(cl_context context, cl_device_id device, const char* fi
     return program;
 }
 
+bool CreateMemoryObjects(cl_context context, cl_mem memObjects[3], float* a, float* b){
+    // Create the memory objects
+    memObjects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float) * ARRAY_SIZE, a, NULL);
+    memObjects[1] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float) * ARRAY_SIZE, b, NULL);
+    memObjects[2] = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(float) * ARRAY_SIZE, NULL, NULL);
+
+    // Check memory objects
+    if(memObjects[0] == NULL || memObjects[1] == NULL || memObjects[2] == NULL){
+        std::cerr << "Failed to create memory objects" << std::endl;
+        return false;
+    }
+
+    // If all goes well...
+    return true;
+}
+
 void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernal, cl_mem memObjects[3]){}
 
 int main(int, char**){    
