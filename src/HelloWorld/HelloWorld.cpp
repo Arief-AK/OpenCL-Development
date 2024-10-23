@@ -9,6 +9,36 @@ cl_context CreateContext(){
     cl_uint numPlatforms;
     cl_platform_id firstPlatformId;
     cl_context context = NULL;
+
+    // Select a platform to run on. For simplicity, we will pick the first available platform
+    errNum = clGetPlatformIDs(1, &firstPlatformId, &numPlatforms);
+    if (errNum != CL_SUCCESS){
+        std::cerr << "Failed to find any OpenCL platforms" << std::endl;
+        return NULL;
+    }
+
+    // Create an OpenCL context on the platform
+    cl_context_properties contextProperties[] = {
+        CL_CONTEXT_PLATFORM,
+        (cl_context_properties)firstPlatformId,
+        0
+    };
+
+    // Create an OpenCL context using the context and its properties
+    context = clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_GPU, NULL, NULL, &errNum);
+    if (errNum != CL_SUCCESS){
+        std::cerr << "Failed to create an OpenCL GPU context. Attempting to create CPU context" << std::endl;
+        
+        // Attempt to create CPU context
+        context = clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_CPU, NULL, NULL, &errNum);
+        if (errNum != CL_SUCCESS){
+            std::cerr << "Failed to create an OpenCL GPU context. Attempting to create CPU context" << std::endl;
+            return NULL;
+        }
+    }
+
+    // Return the context
+    return context;
 }
 
 cl_command_queue CreateCommandQueue(cl_context context, cl_device_id* device){}
