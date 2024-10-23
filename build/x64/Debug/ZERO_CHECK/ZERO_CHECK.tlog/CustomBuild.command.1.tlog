@@ -1,0 +1,10 @@
+^C:\USERS\ARIEF\SOURCE\OPENCL\HELLOPROJECT\BUILD\CMAKEFILES\3EEE3D8E3BADE42CA9B891B7CE9AE2BA\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/Arief/source/OpenCL/HelloProject -BC:/Users/Arief/source/OpenCL/HelloProject/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/Arief/source/OpenCL/HelloProject/build/OpenCLProject.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Arief\source\OpenCL\HelloProject\build\CMakeFiles\3eee3d8e3bade42ca9b891b7ce9ae2ba\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EC8B65D7-21A0-3719-BAD1-36AF22319D7E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
