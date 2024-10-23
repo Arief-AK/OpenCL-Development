@@ -1,5 +1,7 @@
 #include <CL/cl.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 // Constants
 const int ARRAY_SIZE = 1000;
@@ -83,6 +85,48 @@ cl_command_queue CreateCommandQueue(cl_context context, cl_device_id* device){
     return commandQueue;
 }
 
+cl_program CreateProgram(cl_context context, cl_device_id device, const char* fileName){
+    cl_int errNum;
+    cl_program program;
+
+    // Open the kernel file
+    std::ifstream kernelFile(fileName, std::ios::in);
+    if(!kernelFile.is_open()){
+        std::cerr << "Failed to open file for reading: " << fileName << std::endl;
+        return NULL;
+    }
+
+    // Read the kernel file
+    std::ostringstream oss;
+    oss << kernelFile.rdbuf();
+
+    // Convert the buffer from the output stream to a standard string
+    std::string srcStdStr = oss.str();
+    const char *srcStr = srcStdStr.c_str();
+
+    // Create a program
+    program = clCreateProgramWithSource(context, 1, (const char**)&srcStr, NULL, NULL);
+    if(program == NULL){
+        std::cerr << "Failed to create program objects from source" << std::endl;
+        return NULL;
+    }
+
+    // Build the program
+    errNum = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+    if(errNum != CL_SUCCESS){
+        // Determine the reason for failure
+        char buildLog[16384];
+        clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, sizeof(buildLog), buildLog, NULL);
+        std::cerr << "Error in kernel:" << std::endl;
+        std::cerr << buildLog;
+        clReleaseProgram(program);
+        return NULL;
+    }
+
+    // Return the program
+    return program;
+}
+
 void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernal, cl_mem memObjects[3]){}
 
 int main(int, char**){    
@@ -109,7 +153,7 @@ int main(int, char**){
     }
 
     // Create program objects from the kernel source
-    program = CreateProgram();
+    program = CreateProgram(context, device, "HelloWorld.cl");
     if(program == NULL){
         Cleanup(context, commandQueue, program, kernel, memObjects);
         return 1;
