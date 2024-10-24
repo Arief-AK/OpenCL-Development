@@ -8,7 +8,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Include OpenCL headers
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-# Add the path to the OpenCL library
-link_directories(${CMAKE_SOURCE_DIR}/lib)
-
+# Add the source subdirectory
 SUBDIRS(src)

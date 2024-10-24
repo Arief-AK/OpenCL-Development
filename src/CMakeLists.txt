@@ -1,1 +1,4 @@
-SUBDIRS(HelloWorld)
+SUBDIRS(
+    HelloWorld
+    PlatformContextDevices
+)
