@@ -18,4 +18,10 @@ set(OS_LIB OpenCL::OpenCL)
 target_link_libraries(HelloWorld ${OS_LIB})
 
 # Move the kernel file(s) into the executable directory
-configure_file(HelloWorld.cl ${CMAKE_CURRENT_BINARY_DIR}/Debug/HelloWorld.cl COPYONLY)
+if(WIN32)
+    message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR} "/Debug")
+    configure_file(HelloWorld.cl ${CMAKE_CURRENT_BINARY_DIR}/Debug/HelloWorld.cl COPYONLY)
+elseif(UNIX AND NOT APPLE)
+    message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR})
+    configure_file(HelloWorld.cl ${CMAKE_CURRENT_BINARY_DIR}/HelloWorld.cl COPYONLY)
+endif()
