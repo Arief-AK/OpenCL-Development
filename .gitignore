@@ -51,6 +51,9 @@ _deps
 # Folders
 build
 
+# vscode
+.vscode
+
 ### CMake Patch ###
 # External projects
 *-prefix/
