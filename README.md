@@ -45,7 +45,7 @@ cmake ..
 cmake --build . --config Debug
 ```
 
-2. Head to the application and run. For example, the `HelloWorld` application.
+2. Head to the application and run. For example, the `HelloWorld` application
 ```shell
 cd .\src\HelloWorld\Debug
 .\HelloWorld.exe
@@ -60,7 +60,8 @@ cmake ..
 make
 ```
 
-2. Head to the application and run
+2. Head to the application and run. For example, the `HelloWorld` application
 ```shell
-TBA
+cd src/HelloWorld
+./HelloWorld
 ```
