@@ -6,6 +6,10 @@
 // Constants
 const int ARRAY_SIZE = 1000;
 
+/**
+ * @brief Function to create the context of OpenCL platform
+ * @return cl_context
+ */
 cl_context CreateContext(){
     cl_int errNum;
     cl_uint numPlatforms;
@@ -43,6 +47,12 @@ cl_context CreateContext(){
     return context;
 }
 
+/**
+ * @brief Function to setup and assign a command queue to a OpenCL compatible device
+ * @param context
+ * @param device
+ * @return cl_command_queue
+ */
 cl_command_queue CreateCommandQueue(cl_context context, cl_device_id* device){
     cl_int errNum;
     cl_device_id *devices;
@@ -85,6 +95,13 @@ cl_command_queue CreateCommandQueue(cl_context context, cl_device_id* device){
     return commandQueue;
 }
 
+/**
+ * @brief Function to create the program objects (at runtime) to supply to the kernel
+ * @param context
+ * @param device
+ * @param fileName
+ * @return cl_program
+ */
 cl_program CreateProgram(cl_context context, cl_device_id device, const char* fileName){
     cl_int errNum;
     cl_program program;
@@ -127,6 +144,14 @@ cl_program CreateProgram(cl_context context, cl_device_id device, const char* fi
     return program;
 }
 
+/**
+ * @brief Function to create the memory objects to hold and store the memory elements
+ * @param context
+ * @param memObjects[3]
+ * @param a
+ * @param b
+ * @return bool
+ */
 bool CreateMemoryObjects(cl_context context, cl_mem memObjects[3], float* a, float* b){
     // Create the memory objects
     memObjects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float) * ARRAY_SIZE, a, NULL);
@@ -143,6 +168,15 @@ bool CreateMemoryObjects(cl_context context, cl_mem memObjects[3], float* a, flo
     return true;
 }
 
+/**
+ * @brief Function to cleanup the context, command queues, program objects, kernels, and memory objects
+ * @param context
+ * @param commandQueue
+ * @param program
+ * @param kernel
+ * @param memObjects3
+ * @return (void)
+ */
 void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernel, cl_mem memObjects[3]){
     // Free all memory objects
     for (int i = 0; i < 3; i++){
