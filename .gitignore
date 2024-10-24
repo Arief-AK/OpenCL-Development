@@ -48,6 +48,9 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+# Folders
+build
+
 ### CMake Patch ###
 # External projects
 *-prefix/
