@@ -93,6 +93,11 @@ void InfoDevice<T>::display(cl_device_id id, cl_device_info name, std::string st
     }
 }
 
+void InfoDevice<void>::print()
+{
+    std::cout << "Hello from InfoDevice" << std::endl;
+}
+
 template <typename T>
 template <typename K>
 void InfoDevice<T>::appendBitField(K info, K value, std::string name, std::string &str)

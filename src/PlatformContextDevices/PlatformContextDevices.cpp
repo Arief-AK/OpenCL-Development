@@ -1,6 +1,8 @@
 #include <CL/cl.h>
 #include <iostream>
 
+#include <InfoDevice.hpp>
+
 void DisplayPlatformInfo(cl_platform_id id, cl_platform_info name, std::string str){
     // Initialise variables
     cl_int err_num = {};
@@ -70,6 +72,9 @@ int main(){
 
     // Display platform information
     displayInfo();
+
+    // Display information from devices
+    InfoDevice<void>::print();
 
     return 0;
 }
