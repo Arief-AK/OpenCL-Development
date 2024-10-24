@@ -3,19 +3,15 @@ Development of OpenCL applications using OpenCL specification. This project util
 
 ## Structure
 ```
-└── 📁OpenCLProject
+└── 📁OpenCL-Development
     └── 📁include
-        └── 📁CL
-            └── cl.h
-            └── opencl.h
-            └── # Other OpenCL headers
+        └── 📁CL                    # OpenCL headers
     └── 📁src
         └── 📁HelloWorld
             └── CMakeLists.txt
             └── HelloWorld.cl
             └── HelloWorld.cpp
-        └── 📁 # Other projects
-        └── 📁 ..
+        └── 📁 ..                   # Other OpenCL applications
         └── CMakelists.txt
     └── .gitignore
     └── CMakeLists.txt
@@ -29,18 +25,42 @@ OpenCL is typically packaged with graphic drivers from vendors like **AMD**, **I
 - For NVIDIA GPUs, download drivers from the [NVIDIA website](https://www.nvidia.com/en-us/drivers/).
 - For Intel GPUs, download drivers from the [Intel website](https://www.intel.com/content/www/us/en/download-center/home.html).
 
+### Linux
+On Linux machines, it is recommended to install the `ocl-icd-opencl-dev` package
+```shell
+sudo apt-get install ocl-icd-opencl-dev
+```
+
 ## Setup
 
 > [!NOTE]\
-> Ensure that `CMake` is properly installed on your machine. See [CMake official documentation](https://cmake.org/download/).
+> Ensure that `CMake` is properly installed and added to the `PATH` environment variable on your machine. See [CMake official documentation](https://cmake.org/download/).
 
 ### Windows
-1. Build application using `CMake`
+1. Within the root directory of the project, build the project using `CMake`
 ```shell
-TBA
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Debug
+```
+
+2. Head to the application and run. For example, the `HelloWorld` application.
+```shell
+cd .\src\HelloWorld\Debug
+.\HelloWorld.exe
 ```
 
 ### Linux
+1. Within the root directory of the project, build the project using `CMake`
+```shell
+mkdir build
+cd build
+cmake ..
+make
+```
+
+2. Head to the application and run
 ```shell
 TBA
 ```
