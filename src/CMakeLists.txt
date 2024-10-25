@@ -1,4 +1,5 @@
 SUBDIRS(
     HelloWorld
     PlatformContextDevices
+    Convolution
 )
