@@ -89,7 +89,16 @@ void displayInfo(void){
         std::cout << "\nNumber of devices: " << num_devices << std::endl;
 
         for (cl_uint j = 0; j < num_devices; j++){
+            InfoDevice<ArrayType<char>>::display(devices[j], CL_DEVICE_NAME, "CL_DEVICE_NAME");
             InfoDevice<cl_device_type>::display(devices[j], CL_DEVICE_TYPE, "CL_DEVICE_TYPE");
+            InfoDevice<cl_uint>::display(devices[j], CL_DEVICE_VENDOR_ID, "CL_DEVICE_VENDOR_ID");
+            InfoDevice<cl_uint>::display(devices[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, "CL_DEVICE_MAX_CLOCK_FREQUENCY");
+            InfoDevice<cl_uint>::display(devices[j], CL_DEVICE_ADDRESS_BITS, "CL_DEVICE_ADDRESS_BITS");
+            InfoDevice<cl_ulong>::display(devices[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, "CL_DEVICE_MAX_MEM_ALLOC_SIZE");
+            InfoDevice<cl_bool>::display(devices[j], CL_DEVICE_HOST_UNIFIED_MEMORY, "CL_DEVICE_HOST_UNIFIED_MEMORY");
+            InfoDevice<cl_command_queue_properties>::display(devices[j], CL_DEVICE_QUEUE_PROPERTIES, "CL_DEVICE_QUEUE_PROPERTIES");
+            InfoDevice<cl_device_exec_capabilities>::display(devices[j], CL_DEVICE_EXECUTION_CAPABILITIES, "CL_DEVICE_EXECUTION_CAPABILITIES");
+
             std::cout << std::endl;
         }
 

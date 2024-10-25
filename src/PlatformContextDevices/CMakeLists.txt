@@ -14,16 +14,11 @@ endif()
 # Set the OpenCL library
 set(OS_LIB OpenCL::OpenCL)
 
-# Link the OpenCL library to the executable
-target_link_libraries(PlatformContextDevices ${OS_LIB})
-
 # Include the directory with header files
 target_include_directories(PlatformContextDevices PRIVATE include)
 
-# Add source files to the target
-# target_sources(PlatformContextDevices PRIVATE
-#     include/InfoDevice.cpp
-# )
+# Link the OpenCL library to the executable
+target_link_libraries(PlatformContextDevices ${OS_LIB})
 
 # Move the kernel file(s) into the executable directory
 # if(WIN32)

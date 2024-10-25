@@ -1,8 +1,22 @@
+#ifndef INFODEVICE_H
+#define INFODEVICE_H
+
 #include <CL/cl.h>
 #include <iostream>
 
-// Include custom definitions
-#include <ArrayType.hpp>
+template <typename T>
+class ArrayType
+{
+public:
+    static bool isChar() {return false;}
+};
+
+template<>
+class ArrayType<char>
+{
+public:
+    static bool isChar() {return true;}
+};
 
 // Helper function for display function
 template <typename T>
@@ -21,8 +35,8 @@ template <typename T>
 class InfoDevice
 {
 public:
-    // Function to display device information
-    static void display(cl_device_id id, cl_device_info name, std::string str){
+    static void display(cl_device_id id, cl_device_info name, std::string str)
+    {
         cl_int err_num = {};
         size_t param_value_size = {};
 
@@ -129,7 +143,6 @@ template <typename T>
 class InfoDevice<ArrayType<T>>
 {
 public:
-    // Function to display device information
     static void display(cl_device_id id, cl_device_info name, std::string str)
     {
         cl_int err_num = {};
@@ -150,7 +163,7 @@ public:
             return;
         }
 
-        if(ArrayType<J>::isChar()){
+        if(ArrayType<T>::isChar()){
             std::cout << "\t" << str << ":\t" << info << std::endl;
         }
         else if(name == CL_DEVICE_MAX_WORK_ITEM_SIZES){
@@ -167,7 +180,9 @@ public:
             for (cl_uint i = 0; i < max_work_item_dimensions; i++){
                 std::cout << info[i] << " ";
             }
-            std:cout << std::endl;
+            std::cout << std::endl;
         }
     }
 };
+
+#endif // INFODEVICE_H
