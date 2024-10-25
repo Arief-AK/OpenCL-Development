@@ -54,7 +54,7 @@ void displayInfo(void){
     }
 
     // Display the information
-    std::cout << "Number of platforms:\t" << num_platforms << std::endl;
+    std::cout << "Number of platforms: " << num_platforms << std::endl;
 
     // Iterate through list of platforms
     for (cl_uint i = 0; i < num_platforms; i++){
@@ -64,6 +64,36 @@ void displayInfo(void){
         DisplayPlatformInfo(platform_ids[i], CL_PLATFORM_NAME, "CL_PLATFORM_NAME");
         DisplayPlatformInfo(platform_ids[i], CL_PLATFORM_VERSION, "CL_PLATFORM_VERSION");
         DisplayPlatformInfo(platform_ids[i], CL_PLATFORM_VENDOR, "CL_PLATFORM_VENDOR");
+
+        // Initialise variable to store number of devices
+        cl_uint num_devices = {};
+        
+        // Determine device IDs from the known platforms
+        err_num = clGetDeviceIDs(platform_ids[i], CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices);
+        if(err_num != CL_SUCCESS){
+            std::cerr << "Failed to determine device IDs from platform " << i << std::endl;
+            return; 
+        }
+
+        // Allocate memory for the number of devices
+        cl_device_id* devices = (cl_device_id*)alloca(sizeof(cl_device_id) * num_devices);
+
+        // Retrieve the device IDs
+        err_num = clGetDeviceIDs(platform_ids[i], CL_DEVICE_TYPE_ALL, num_devices, devices, NULL);
+        if(err_num != CL_SUCCESS){
+            std::cerr << "Failed to retrieve device IDs from platform " << i << std::endl;
+            return;
+        }
+        
+        // Display device(s) information - Iterate through the devices
+        std::cout << "\nNumber of devices: " << num_devices << std::endl;
+
+        for (cl_uint j = 0; j < num_devices; j++){
+            InfoDevice<cl_device_type>::display(devices[j], CL_DEVICE_TYPE, "CL_DEVICE_TYPE");
+            std::cout << std::endl;
+        }
+
+        std::cout << "-------------------- END OF PLATFORM " << i << " --------------------" << std::endl;
     }
 }
 
@@ -72,9 +102,6 @@ int main(){
 
     // Display platform information
     displayInfo();
-
-    // Display information from devices
-    InfoDevice<void>::print();
 
     return 0;
 }

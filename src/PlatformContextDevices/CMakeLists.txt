@@ -21,9 +21,9 @@ target_link_libraries(PlatformContextDevices ${OS_LIB})
 target_include_directories(PlatformContextDevices PRIVATE include)
 
 # Add source files to the target
-target_sources(PlatformContextDevices PRIVATE
-    include/InfoDevice.cpp
-)
+# target_sources(PlatformContextDevices PRIVATE
+#     include/InfoDevice.cpp
+# )
 
 # Move the kernel file(s) into the executable directory
 # if(WIN32)
