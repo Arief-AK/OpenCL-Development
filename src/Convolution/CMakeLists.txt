@@ -15,16 +15,16 @@ endif()
 set(OS_LIB OpenCL::OpenCL)
 
 # Include the directory with header files
-target_include_directories(Convolution PRIVATE include)
+target_include_directories(Convolution PRIVATE kernel)
 
 # Link the OpenCL library to the executable
 target_link_libraries(Convolution ${OS_LIB})
 
 # Move the kernel file(s) into the executable directory
-# if(WIN32)
-#     message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR} "/Debug")
-#     configure_file(HelloWorld.cl ${CMAKE_CURRENT_BINARY_DIR}/Debug/HelloWorld.cl COPYONLY)
-# elseif(UNIX AND NOT APPLE)
-#     message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR})
-#     configure_file(HelloWorld.cl ${CMAKE_CURRENT_BINARY_DIR}/HelloWorld.cl COPYONLY)
-# endif()
+if(WIN32)
+    message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR} "/Debug")
+    configure_file(kernel/convolution.cl ${CMAKE_CURRENT_BINARY_DIR}/Debug/convolution.cl COPYONLY)
+elseif(UNIX AND NOT APPLE)
+    message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR})
+    configure_file(kernel/convolution.cl ${CMAKE_CURRENT_BINARY_DIR}/convolution.cl COPYONLY)
+endif()
