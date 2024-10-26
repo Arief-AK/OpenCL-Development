@@ -16,6 +16,7 @@ set(OS_LIB OpenCL::OpenCL)
 
 # Include the directory with header files
 target_include_directories(Convolution PRIVATE kernel)
+target_include_directories(Convolution PRIVATE include)
 
 # Link the OpenCL library to the executable
 target_link_libraries(Convolution ${OS_LIB})

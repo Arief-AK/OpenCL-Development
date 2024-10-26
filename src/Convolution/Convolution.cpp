@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <InfoDevice.hpp>
+
 // Constants
 bool time_kernel = true;
 
@@ -103,6 +105,10 @@ int main()
             // Retrieve the number of devices
             err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_CPU, num_devices, &device_IDs[0], NULL);
             CheckError(err_num, "clGetDeviceIDs");
+
+            for (cl_uint j = 0; j < num_devices; j++){
+                InfoDevice<ArrayType<char>>::display(device_IDs[j], CL_DEVICE_NAME, "CL_DEVICE_NAME");
+            }
             break;
         }
     }
