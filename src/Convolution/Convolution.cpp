@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 #include <InfoDevice.hpp>
 
@@ -243,7 +244,7 @@ int main()
     std::cout << "Output signal:\n" << std::endl;
     for(int y = 0; y < output_signal_height; y++){
         for(int x = 0; x < output_signal_width; x++){
-            std::cout << output_signal[x][y] << " ";
+            std::cout << std::setw(5) << output_signal[x][y] << " ";
         }
         std::cout << std::endl;
     }
