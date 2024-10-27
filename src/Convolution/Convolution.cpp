@@ -17,23 +17,14 @@ enum USING_DEVICE {
 bool time_kernel = true;
 
 // Input signal
-const unsigned int input_signal_width = 8;
-const unsigned int input_signal_height = 8;
+const unsigned int input_signal_width = 1300;
+const unsigned int input_signal_height = 1300;
 
-cl_uint input_signal [input_signal_width][input_signal_height] = {
-    {3, 1, 1, 4, 8, 2, 1, 3},
-	{4, 2, 1, 1, 2, 1, 2, 3},
-	{4, 4, 4, 4, 3, 2, 2, 2},
-	{9, 8, 3, 8, 9, 0, 0, 0},
-	{9, 3, 3, 9, 0, 0, 0, 0},
-	{0, 9, 0, 8, 0, 0, 0, 0},
-	{3, 0, 8, 8, 9, 4, 4, 4},
-	{5, 9, 8, 1, 8, 1, 1, 1}
-};
+cl_uint input_signal [input_signal_width][input_signal_height];
 
 // Output signal
-const unsigned int output_signal_width = 6;
-const unsigned int output_signal_height = 6;
+const unsigned int output_signal_width = 1298;
+const unsigned int output_signal_height = 1298;
 
 cl_uint output_signal [output_signal_width][output_signal_height] = {};
 
@@ -42,8 +33,8 @@ const unsigned int mask_width = 3;
 const unsigned int mask_height = 3;
 
 cl_uint mask[mask_width][mask_height] = {
-    {1, 1, 1},
-    {1, 0, 1},
+    {15, 2, 1},
+    {3, 5, 1},
     {1, 1, 1}
 };
 
@@ -83,8 +74,15 @@ int main()
 {
     std::cout << "Hello from Convolution!" << std::endl;
 
+    // Initialize the matrix with random values
+    for (int y = 0; y < input_signal_height; y++) {
+        for (int x = 0; x < input_signal_width; x++) {
+            input_signal[y][x] = rand() % 5000;  // Random values
+        }
+    }
+
     // Set the intended device
-    enum USING_DEVICE intended_device = DEDICATED_GRAPHICS;
+    enum USING_DEVICE intended_device = CPU;
 
     // Initialise variables
     cl_int err_num;
@@ -138,7 +136,7 @@ int main()
         }
 
         // Determine the number of devices
-        err_num = clGetDeviceIDs(platform_IDs[platform_index], determining_device, 0, NULL, &num_devices);
+        err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
         if(err_num != CL_SUCCESS && err_num != CL_DEVICE_NOT_FOUND){
             CheckError(err_num, "clGetDeviceIDs");
         }else if(num_devices > 0){
@@ -146,7 +144,7 @@ int main()
             device_IDs = (cl_device_id*)alloca(sizeof(cl_device_id) * num_devices);
 
             // Retrieve the number of devices
-            err_num = clGetDeviceIDs(platform_IDs[platform_index], retrieving_device, num_devices, &device_IDs[0], NULL);
+            err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_GPU, num_devices, &device_IDs[0], NULL);
             CheckError(err_num, "clGetDeviceIDs");
 
             // Display properties of the selected device
@@ -235,8 +233,8 @@ int main()
 
     // Get the duration
     if(time_kernel){
-        double duration = (end - start) * 1.0e-6;
-        std::cout << "Kernel execution time: " << duration << " ns" << std::endl;
+        double time_ms = (end - start) * 1e-6;
+        std::cout << "Kernel execution time: " << time_ms << " ms" << std::endl;
         std::cout << "\n-------------------- END OF KERNEL EXEUCTION DETAILS --------------------" << std::endl;
         std::cout << std::endl;
     }
@@ -246,13 +244,13 @@ int main()
     CheckError(err_num, "clEnqueueReadBuffer");
 
     // Print the buffer
-    std::cout << "Output signal:\n" << std::endl;
-    for(int y = 0; y < output_signal_height; y++){
-        for(int x = 0; x < output_signal_width; x++){
-            std::cout << std::setw(5) << output_signal[x][y] << " ";
-        }
-        std::cout << std::endl;
-    }
+    // std::cout << "Output signal:\n" << std::endl;
+    // for(int y = 0; y < output_signal_height; y++){
+    //     for(int x = 0; x < output_signal_width; x++){
+    //         std::cout << std::setw(5) << output_signal[x][y] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 
     return 0;
 }
