@@ -5,6 +5,13 @@
 
 #include <InfoDevice.hpp>
 
+// Enum
+enum USING_DEVICE {
+    CPU = (1 << 1),
+    INTEGRATED_GRAPHICS = (1 << 2),
+    DEDICATED_GRAPHICS = (1 << 2)
+    };
+
 // Constants
 bool time_kernel = true;
 
@@ -55,6 +62,9 @@ int main()
 {
     std::cout << "Hello from Convolution!" << std::endl;
 
+    // Set the intended device
+    enum USING_DEVICE intended_device = CPU;
+
     // Initialise variables
     cl_int err_num;
     cl_uint num_platforms;
@@ -93,9 +103,21 @@ int main()
     cl_uint platform_index;
 
     // Iterate through the platforms
-    for(platform_index = 0; platform_index < num_platforms; platform_index++){
+    for(platform_index = 0; platform_index < num_platforms; platform_index++){ 
+        // Initialise placeholder variables (default CPU)
+        auto determining_device = CPU;
+        auto retrieving_device = CPU;
+        
+        // Check the intended device and re-initialise (if-necessary)
+        if(intended_device == INTEGRATED_GRAPHICS){
+            retrieving_device = INTEGRATED_GRAPHICS;
+        } else if(intended_device == DEDICATED_GRAPHICS){
+            determining_device = DEDICATED_GRAPHICS;
+            retrieving_device = DEDICATED_GRAPHICS;
+        }
+
         // Determine the number of devices
-        err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
+        err_num = clGetDeviceIDs(platform_IDs[platform_index], determining_device, 0, NULL, &num_devices);
         if(err_num != CL_SUCCESS && err_num != CL_DEVICE_NOT_FOUND){
             CheckError(err_num, "clGetDeviceIDs");
         }else if(num_devices > 0){
@@ -103,7 +125,7 @@ int main()
             device_IDs = (cl_device_id*)alloca(sizeof(cl_device_id) * num_devices);
 
             // Retrieve the number of devices
-            err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_GPU, num_devices, &device_IDs[0], NULL);
+            err_num = clGetDeviceIDs(platform_IDs[platform_index], retrieving_device, num_devices, &device_IDs[0], NULL);
             CheckError(err_num, "clGetDeviceIDs");
 
             // Display properties of the selected device
@@ -121,6 +143,7 @@ int main()
                 InfoDevice<cl_device_exec_capabilities>::display(device_IDs[j], CL_DEVICE_EXECUTION_CAPABILITIES, "CL_DEVICE_EXECUTION_CAPABILITIES");
             }
 
+            std::cout << "\n-------------------- END OF DEVICE PROPERTIES --------------------" << std::endl;
             std::cout << std::endl;
             break;
         }
@@ -208,6 +231,8 @@ int main()
     if(time_kernel){
         double duration = (end - start) * 1.0e-6;
         std::cout << "Kernel execution time: " << duration << " ns" << std::endl;
+        std::cout << "\n-------------------- END OF KERNEL EXEUCTION DETAILS --------------------" << std::endl;
+        std::cout << std::endl;
     }
 
     // Read the buffer
@@ -215,7 +240,7 @@ int main()
     CheckError(err_num, "clEnqueueReadBuffer");
 
     // Print the buffer
-    std::cout << "\nOutput signal" << std::endl;
+    std::cout << "Output signal:\n" << std::endl;
     for(int y = 0; y < output_signal_height; y++){
         for(int x = 0; x < output_signal_width; x++){
             std::cout << output_signal[x][y] << " ";
