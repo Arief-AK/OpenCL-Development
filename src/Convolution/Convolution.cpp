@@ -59,12 +59,32 @@ void CL_CALLBACK contextCallback(const char* error_info, const void* private_inf
     exit(EXIT_FAILURE);
 }
 
+void DisplayDeviceProperties(cl_device_id* device_IDs, cl_uint num_devices){
+    // Display properties of the selected device
+    std::cout << "\nDEVICE PROPERTIES:\n" << std::endl;
+
+    for (cl_uint j = 0; j < num_devices; j++){
+        InfoDevice<ArrayType<char>>::display(device_IDs[j], CL_DEVICE_NAME, "CL_DEVICE_NAME");
+        InfoDevice<cl_device_type>::display(device_IDs[j], CL_DEVICE_TYPE, "CL_DEVICE_TYPE");
+        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_VENDOR_ID, "CL_DEVICE_VENDOR_ID");
+        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, "CL_DEVICE_MAX_CLOCK_FREQUENCY");
+        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_ADDRESS_BITS, "CL_DEVICE_ADDRESS_BITS");
+        InfoDevice<cl_ulong>::display(device_IDs[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, "CL_DEVICE_MAX_MEM_ALLOC_SIZE");
+        InfoDevice<cl_bool>::display(device_IDs[j], CL_DEVICE_HOST_UNIFIED_MEMORY, "CL_DEVICE_HOST_UNIFIED_MEMORY");
+        InfoDevice<cl_command_queue_properties>::display(device_IDs[j], CL_DEVICE_QUEUE_PROPERTIES, "CL_DEVICE_QUEUE_PROPERTIES");
+        InfoDevice<cl_device_exec_capabilities>::display(device_IDs[j], CL_DEVICE_EXECUTION_CAPABILITIES, "CL_DEVICE_EXECUTION_CAPABILITIES");
+    }
+
+    std::cout << "\n-------------------- END OF DEVICE PROPERTIES --------------------" << std::endl;
+    std::cout << std::endl;
+}
+
 int main()
 {
     std::cout << "Hello from Convolution!" << std::endl;
 
     // Set the intended device
-    enum USING_DEVICE intended_device = CPU;
+    enum USING_DEVICE intended_device = DEDICATED_GRAPHICS;
 
     // Initialise variables
     cl_int err_num;
@@ -130,22 +150,7 @@ int main()
             CheckError(err_num, "clGetDeviceIDs");
 
             // Display properties of the selected device
-            std::cout << "\nDEVICE PROPERTIES:\n" << std::endl;
-
-            for (cl_uint j = 0; j < num_devices; j++){
-                InfoDevice<ArrayType<char>>::display(device_IDs[j], CL_DEVICE_NAME, "CL_DEVICE_NAME");
-                InfoDevice<cl_device_type>::display(device_IDs[j], CL_DEVICE_TYPE, "CL_DEVICE_TYPE");
-                InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_VENDOR_ID, "CL_DEVICE_VENDOR_ID");
-                InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, "CL_DEVICE_MAX_CLOCK_FREQUENCY");
-                InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_ADDRESS_BITS, "CL_DEVICE_ADDRESS_BITS");
-                InfoDevice<cl_ulong>::display(device_IDs[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, "CL_DEVICE_MAX_MEM_ALLOC_SIZE");
-                InfoDevice<cl_bool>::display(device_IDs[j], CL_DEVICE_HOST_UNIFIED_MEMORY, "CL_DEVICE_HOST_UNIFIED_MEMORY");
-                InfoDevice<cl_command_queue_properties>::display(device_IDs[j], CL_DEVICE_QUEUE_PROPERTIES, "CL_DEVICE_QUEUE_PROPERTIES");
-                InfoDevice<cl_device_exec_capabilities>::display(device_IDs[j], CL_DEVICE_EXECUTION_CAPABILITIES, "CL_DEVICE_EXECUTION_CAPABILITIES");
-            }
-
-            std::cout << "\n-------------------- END OF DEVICE PROPERTIES --------------------" << std::endl;
-            std::cout << std::endl;
+            DisplayDeviceProperties(device_IDs, num_devices);
             break;
         }
     }
