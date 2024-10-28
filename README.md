@@ -37,7 +37,7 @@ sudo apt-get install ocl-icd-opencl-dev
 > Ensure that `CMake` is properly installed and added to the `PATH` environment variable on your machine. See [CMake official documentation](https://cmake.org/download/).
 
 ### Windows
-1. Within the root directory of the project, build the project using `CMake`
+1. Within the root directory of the project, build the project using `CMake`. In this example, the `Debug` configuration is used.
 ```shell
 mkdir build
 cd build
