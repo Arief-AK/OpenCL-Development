@@ -299,6 +299,5 @@ int main(int, char**){
 
     // Final cleanup
     Cleanup(context, commandQueue, program, kernel, memObjects);
-    system("pause");
     return 0;
 }
