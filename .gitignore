@@ -5,8 +5,6 @@
 # Prerequisites
 *.d
 
-.idea
-
 # Compiled Object files
 *.slo
 *.lo
@@ -56,6 +54,9 @@ build
 
 # vscode
 .vscode
+
+## Miscellaneous
+.idea
 
 ### CMake Patch ###
 # External projects
