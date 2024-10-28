@@ -35,7 +35,7 @@ template <typename T>
 class InfoDevice
 {
 public:
-    static void display(cl_device_id id, cl_device_info name, std::string str)
+    static void display(cl_device_id id, cl_device_info name, std::string str, std::string& received_device_type)
     {
         cl_int err_num = {};
         size_t param_value_size = {};
@@ -67,6 +67,7 @@ public:
                 
                 // Display the type
                 std::cout << "\t\t" << str << ":\t" << device_type << std::endl;
+                received_device_type = device_type;
             }
             break;
 

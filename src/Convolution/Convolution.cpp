@@ -9,7 +9,6 @@
 // Enum
 enum USING_DEVICE {
     CPU = (1 << 1),
-    INTEGRATED_GRAPHICS = (1 << 2),
     DEDICATED_GRAPHICS = (1 << 2)
     };
 
@@ -50,20 +49,20 @@ void CL_CALLBACK contextCallback(const char* error_info, const void* private_inf
     exit(EXIT_FAILURE);
 }
 
-void DisplayDeviceProperties(cl_device_id* device_IDs, cl_uint num_devices){
+void DisplayDeviceProperties(cl_device_id* device_IDs, cl_uint num_devices, std::string& device_type){
     // Display properties of the selected device
     std::cout << "\nDEVICE PROPERTIES:\n" << std::endl;
 
     for (cl_uint j = 0; j < num_devices; j++){
         InfoDevice<ArrayType<char>>::display(device_IDs[j], CL_DEVICE_NAME, "CL_DEVICE_NAME");
-        InfoDevice<cl_device_type>::display(device_IDs[j], CL_DEVICE_TYPE, "CL_DEVICE_TYPE");
-        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_VENDOR_ID, "CL_DEVICE_VENDOR_ID");
-        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, "CL_DEVICE_MAX_CLOCK_FREQUENCY");
-        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_ADDRESS_BITS, "CL_DEVICE_ADDRESS_BITS");
-        InfoDevice<cl_ulong>::display(device_IDs[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, "CL_DEVICE_MAX_MEM_ALLOC_SIZE");
-        InfoDevice<cl_bool>::display(device_IDs[j], CL_DEVICE_HOST_UNIFIED_MEMORY, "CL_DEVICE_HOST_UNIFIED_MEMORY");
-        InfoDevice<cl_command_queue_properties>::display(device_IDs[j], CL_DEVICE_QUEUE_PROPERTIES, "CL_DEVICE_QUEUE_PROPERTIES");
-        InfoDevice<cl_device_exec_capabilities>::display(device_IDs[j], CL_DEVICE_EXECUTION_CAPABILITIES, "CL_DEVICE_EXECUTION_CAPABILITIES");
+        InfoDevice<cl_device_type>::display(device_IDs[j], CL_DEVICE_TYPE, "CL_DEVICE_TYPE", device_type);
+        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_VENDOR_ID, "CL_DEVICE_VENDOR_ID", device_type);
+        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, "CL_DEVICE_MAX_CLOCK_FREQUENCY", device_type);
+        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_ADDRESS_BITS, "CL_DEVICE_ADDRESS_BITS", device_type);
+        InfoDevice<cl_ulong>::display(device_IDs[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, "CL_DEVICE_MAX_MEM_ALLOC_SIZE", device_type);
+        InfoDevice<cl_bool>::display(device_IDs[j], CL_DEVICE_HOST_UNIFIED_MEMORY, "CL_DEVICE_HOST_UNIFIED_MEMORY", device_type);
+        InfoDevice<cl_command_queue_properties>::display(device_IDs[j], CL_DEVICE_QUEUE_PROPERTIES, "CL_DEVICE_QUEUE_PROPERTIES", device_type);
+        InfoDevice<cl_device_exec_capabilities>::display(device_IDs[j], CL_DEVICE_EXECUTION_CAPABILITIES, "CL_DEVICE_EXECUTION_CAPABILITIES", device_type);
     }
 
     std::cout << "\n-------------------- END OF DEVICE PROPERTIES --------------------" << std::endl;
@@ -82,7 +81,7 @@ int main()
     }
 
     // Set the intended device
-    enum USING_DEVICE intended_device = CPU;
+    enum USING_DEVICE intended_device = DEDICATED_GRAPHICS;
 
     // Initialise variables
     cl_int err_num;
@@ -120,23 +119,15 @@ int main()
 
     // Initialise platform index
     cl_uint platform_index;
+    cl_uint selected_platform_index = 0;
 
     // Iterate through the platforms
     for(platform_index = 0; platform_index < num_platforms; platform_index++){ 
         // Initialise placeholder variables (default CPU)
-        auto determining_device = CPU;
-        auto retrieving_device = CPU;
-        
-        // Check the intended device and re-initialise (if-necessary)
-        if(intended_device == INTEGRATED_GRAPHICS){
-            retrieving_device = INTEGRATED_GRAPHICS;
-        } else if(intended_device == DEDICATED_GRAPHICS){
-            determining_device = DEDICATED_GRAPHICS;
-            retrieving_device = DEDICATED_GRAPHICS;
-        }
+        std::string device_type = {};
 
         // Determine the number of devices
-        err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
+        err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices);
         if(err_num != CL_SUCCESS && err_num != CL_DEVICE_NOT_FOUND){
             CheckError(err_num, "clGetDeviceIDs");
         }else if(num_devices > 0){
@@ -144,22 +135,28 @@ int main()
             device_IDs = (cl_device_id*)alloca(sizeof(cl_device_id) * num_devices);
 
             // Retrieve the number of devices
-            err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_GPU, num_devices, &device_IDs[0], NULL);
+            err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_ALL, num_devices, device_IDs, NULL);
             CheckError(err_num, "clGetDeviceIDs");
 
             // Display properties of the selected device
-            DisplayDeviceProperties(device_IDs, num_devices);
-            break;
+            DisplayDeviceProperties(device_IDs, num_devices, device_type);
+        }
+
+        // Check the intended device and re-initialise (if-necessary)
+        if(intended_device == DEDICATED_GRAPHICS && device_type == "CL_DEVICE_TYPE_GPU"){
+            selected_platform_index = platform_index;
+        } else if(intended_device == CPU && device_type == "CL_DEVICE_TYPE_CPU"){
+            selected_platform_index = platform_index;
         }
     }
 
     if(device_IDs == NULL){
-        std::cout << "No CPU device found" << std::endl;
+        std::cout << "No OpenCL devices found" << std::endl;
         exit(-1);
     }
 
     // Create a context properties variable
-    cl_context_properties context_properties[] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform_IDs[platform_index], 0};
+    cl_context_properties context_properties[] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform_IDs[selected_platform_index], 0};
 
     // Create a context
     context = clCreateContext(context_properties, num_devices, device_IDs, &contextCallback, NULL, &err_num);
@@ -242,15 +239,5 @@ int main()
     // Read the buffer
     err_num = clEnqueueReadBuffer(queue, output_signal_buffer, CL_TRUE, 0, sizeof(cl_uint) * output_signal_height * output_signal_width, output_signal, 0, NULL, NULL);
     CheckError(err_num, "clEnqueueReadBuffer");
-
-    // Print the buffer
-    // std::cout << "Output signal:\n" << std::endl;
-    // for(int y = 0; y < output_signal_height; y++){
-    //     for(int x = 0; x < output_signal_width; x++){
-    //         std::cout << std::setw(5) << output_signal[x][y] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
     return 0;
 }
