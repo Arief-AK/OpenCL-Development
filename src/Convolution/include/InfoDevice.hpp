@@ -35,7 +35,35 @@ template <typename T>
 class InfoDevice
 {
 public:
-    static void display(cl_device_id id, cl_device_info name, std::string str, std::string& received_device_type)
+    static std::string GetDeviceType(cl_device_id id){
+        cl_int err_num = {};
+        size_t param_value_size = {};
+
+        // Determine the number of devices
+        err_num = clGetDeviceInfo(id, CL_DEVICE_TYPE, 0, NULL, &param_value_size);
+        if(err_num != CL_SUCCESS){
+            std::cerr << "Failed to determine number of OpenCL devices" << std::endl;
+            exit(-1);
+        }
+
+        // Allocate memory to store the device information
+        T* info = (T*)alloca(sizeof(T) * param_value_size);
+        err_num = clGetDeviceInfo(id, CL_DEVICE_TYPE, param_value_size, info, NULL);
+        if(err_num != CL_SUCCESS){
+            std::cerr << "Failed to retrieve OpenCL device information" << std::endl;
+            exit(-1);
+        }
+
+        std::string device_type = {};
+        appendBitField<cl_device_type>(*(reinterpret_cast<cl_device_type*>(info)), CL_DEVICE_TYPE_CPU, "CL_DEVICE_TYPE_CPU", device_type);                  // CPU type
+        appendBitField<cl_device_type>(*(reinterpret_cast<cl_device_type*>(info)), CL_DEVICE_TYPE_GPU, "CL_DEVICE_TYPE_GPU", device_type);                  // GPU type
+        appendBitField<cl_device_type>(*(reinterpret_cast<cl_device_type*>(info)), CL_DEVICE_TYPE_ACCELERATOR, "CL_DEVICE_TYPE_ACCELERATOR", device_type);  // Accelerator type
+        appendBitField<cl_device_type>(*(reinterpret_cast<cl_device_type*>(info)), CL_DEVICE_TYPE_DEFAULT, "CL_DEVICE_TYPE_DEFAULT", device_type);          // Default type
+
+        return device_type;
+    }
+
+    static void display(cl_device_id id, cl_device_info name, std::string str)
     {
         cl_int err_num = {};
         size_t param_value_size = {};
@@ -67,7 +95,6 @@ public:
                 
                 // Display the type
                 std::cout << "\t\t" << str << ":\t" << device_type << std::endl;
-                received_device_type = device_type;
             }
             break;
 

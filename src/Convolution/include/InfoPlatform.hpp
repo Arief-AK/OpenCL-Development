@@ -7,8 +7,9 @@
 class InfoPlatform
 {
 public:
-    InfoPlatform();
-    void DisplayPlatformInfo(cl_platform_id id, cl_platform_info name, std::string str);
+    InfoPlatform(cl_platform_id id);
+    void DisplaySinglePlatformInfo(cl_platform_id id, cl_platform_info name, std::string str);
+    void Display();
 
     std::string GetPlatformInfo(cl_platform_info name);
 

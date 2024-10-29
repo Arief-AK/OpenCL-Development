@@ -1,12 +1,27 @@
 #include "InfoPlatform.hpp"
 
-InfoPlatform::InfoPlatform():m_profile{""},m_name{""},m_version{""},m_vendor{""}{}
+InfoPlatform::InfoPlatform(cl_platform_id id)
+{
+    m_profile = retrievePlatformInfo(id, CL_PLATFORM_PROFILE, "CL_PLATFORM_PROFILE");
+    m_name = retrievePlatformInfo(id, CL_PLATFORM_NAME, "CL_PLATFORM_NAME");
+    m_version = retrievePlatformInfo(id, CL_PLATFORM_VERSION, "CL_PLATFORM_VERSION");
+    m_vendor = retrievePlatformInfo(id, CL_PLATFORM_VENDOR, "CL_PLATFORM_VENDOR");
+}
 
-void InfoPlatform::DisplayPlatformInfo(cl_platform_id id, cl_platform_info name, std::string str)
+void InfoPlatform::DisplaySinglePlatformInfo(cl_platform_id id, cl_platform_info name, std::string str)
 {
     // Retrieve and display information
     std::string info = retrievePlatformInfo(id, name, str);
     std::cout << "\t" << str << "\t" << info << std::endl;
+}
+
+void InfoPlatform::Display()
+{
+    std::cout << "\nPLATFORM PROPERTIES:" << std::endl;
+    std::cout << "\t" << "CL_PLATFORM_PROFILE" << "\t" << m_profile << std::endl;
+    std::cout << "\t" << "CL_PLATFORM_NAME" << "\t" << m_name << std::endl;
+    std::cout << "\t" << "CL_PLATFORM_VERSION" << "\t" << m_version << std::endl;
+    std::cout << "\t" << "CL_PLATFORM_VENDOR" << "\t" << m_vendor << std::endl;
 }
 
 std::string InfoPlatform::GetPlatformInfo(cl_platform_info name)

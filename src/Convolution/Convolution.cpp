@@ -9,13 +9,14 @@
 
 // Enum
 enum USING_DEVICE {
-    CPU = (1 << 1),
-    iGPU = (1 << 2),
-    DEDICATED_GRAPHICS = (1 << 2)
+    CPU = 1,
+    iGPU = 2,
+    GPU = 3
     };
 
 // Constants
-bool time_kernel = true;
+bool TIME_KERNEL = true;
+int INTENDED_DEVICE = 3;    // 1 - CPU, 2 - iGPU, 3 - GPU
 
 // Input signal
 const unsigned int input_signal_width = 1300;
@@ -39,6 +40,37 @@ cl_uint mask[mask_width][mask_height] = {
     {1, 1, 1}
 };
 
+void InitialiseMatrix(){
+    // Initialize the matrix with random values
+    for (int y = 0; y < input_signal_height; y++) {
+        for (int x = 0; x < input_signal_width; x++) {
+            input_signal[y][x] = rand() % 5000;  // Random values
+        }
+    }
+}
+
+void CheckIntendedDevice(USING_DEVICE intended_device){
+    std::string str_intended_device = {};
+
+    if(intended_device == CPU){
+        str_intended_device = "CPU";
+        INTENDED_DEVICE = (1 << 1);
+    } else if(intended_device == GPU){
+        str_intended_device = "GPU";
+        INTENDED_DEVICE = (1 << 2);
+    } else if(intended_device == iGPU){
+        str_intended_device = "iGPU";
+        INTENDED_DEVICE = (1 << 2);
+    }
+
+    if(!str_intended_device.empty()){
+        std::cout << "Intended device: " << str_intended_device << std::endl;
+    } else{
+        std::cout << "Unrecognised intended device" << std::endl;
+        exit(-1);
+    }
+}
+
 inline void CheckError(cl_int error, const char* name){
     if(error != CL_SUCCESS){
         std::cerr << "Error: " << name << "(" << error << " )" << std::endl;
@@ -53,30 +85,27 @@ void CL_CALLBACK contextCallback(const char* error_info, const void* private_inf
 
 void DisplayPlatformProperties(cl_platform_id* platform_IDs, cl_uint platform_index, InfoPlatform& platform_handle){
     // Display platform information
-    std::cout << "\nPLATFORM PROPERTIES:\n" << std::endl;
+    std::cout << "\nPLATFORM PROPERTIES:" << std::endl;
 
     std::cout << "\nPlatform " << platform_index << ":" << std::endl;
-    platform_handle.DisplayPlatformInfo(platform_IDs[platform_index], CL_PLATFORM_PROFILE, "CL_PLATFORM_PROFILE");
-    platform_handle.DisplayPlatformInfo(platform_IDs[platform_index], CL_PLATFORM_NAME, "CL_PLATFORM_NAME");
-    platform_handle.DisplayPlatformInfo(platform_IDs[platform_index], CL_PLATFORM_VERSION, "CL_PLATFORM_VERSION");
-    platform_handle.DisplayPlatformInfo(platform_IDs[platform_index], CL_PLATFORM_VENDOR, "CL_PLATFORM_VENDOR");
+    platform_handle.DisplaySinglePlatformInfo(platform_IDs[platform_index], CL_PLATFORM_PROFILE, "CL_PLATFORM_PROFILE");
+    platform_handle.DisplaySinglePlatformInfo(platform_IDs[platform_index], CL_PLATFORM_NAME, "CL_PLATFORM_NAME");
+    platform_handle.DisplaySinglePlatformInfo(platform_IDs[platform_index], CL_PLATFORM_VERSION, "CL_PLATFORM_VERSION");
+    platform_handle.DisplaySinglePlatformInfo(platform_IDs[platform_index], CL_PLATFORM_VENDOR, "CL_PLATFORM_VENDOR");
 }
 
-void DisplayDeviceProperties(cl_device_id* device_IDs, cl_uint num_devices, std::string& device_type){
-    // Display properties of the selected device
+void DisplayDeviceProperties(cl_device_id* device_IDs, cl_uint num_devices_index){
     std::cout << "\nDEVICE PROPERTIES:\n" << std::endl;
 
-    for (cl_uint j = 0; j < num_devices; j++){
-        InfoDevice<ArrayType<char>>::display(device_IDs[j], CL_DEVICE_NAME, "CL_DEVICE_NAME");
-        InfoDevice<cl_device_type>::display(device_IDs[j], CL_DEVICE_TYPE, "CL_DEVICE_TYPE", device_type);
-        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_VENDOR_ID, "CL_DEVICE_VENDOR_ID", device_type);
-        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, "CL_DEVICE_MAX_CLOCK_FREQUENCY", device_type);
-        InfoDevice<cl_uint>::display(device_IDs[j], CL_DEVICE_ADDRESS_BITS, "CL_DEVICE_ADDRESS_BITS", device_type);
-        InfoDevice<cl_ulong>::display(device_IDs[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, "CL_DEVICE_MAX_MEM_ALLOC_SIZE", device_type);
-        InfoDevice<cl_bool>::display(device_IDs[j], CL_DEVICE_HOST_UNIFIED_MEMORY, "CL_DEVICE_HOST_UNIFIED_MEMORY", device_type);
-        InfoDevice<cl_command_queue_properties>::display(device_IDs[j], CL_DEVICE_QUEUE_PROPERTIES, "CL_DEVICE_QUEUE_PROPERTIES", device_type);
-        InfoDevice<cl_device_exec_capabilities>::display(device_IDs[j], CL_DEVICE_EXECUTION_CAPABILITIES, "CL_DEVICE_EXECUTION_CAPABILITIES", device_type);
-    }
+    InfoDevice<ArrayType<char>>::display(device_IDs[num_devices_index], CL_DEVICE_NAME, "CL_DEVICE_NAME");
+    InfoDevice<cl_device_type>::display(device_IDs[num_devices_index], CL_DEVICE_TYPE, "CL_DEVICE_TYPE");
+    InfoDevice<cl_uint>::display(device_IDs[num_devices_index], CL_DEVICE_VENDOR_ID, "CL_DEVICE_VENDOR_ID");
+    InfoDevice<cl_uint>::display(device_IDs[num_devices_index], CL_DEVICE_MAX_CLOCK_FREQUENCY, "CL_DEVICE_MAX_CLOCK_FREQUENCY");
+    InfoDevice<cl_uint>::display(device_IDs[num_devices_index], CL_DEVICE_ADDRESS_BITS, "CL_DEVICE_ADDRESS_BITS");
+    InfoDevice<cl_ulong>::display(device_IDs[num_devices_index], CL_DEVICE_MAX_MEM_ALLOC_SIZE, "CL_DEVICE_MAX_MEM_ALLOC_SIZE");
+    InfoDevice<cl_bool>::display(device_IDs[num_devices_index], CL_DEVICE_HOST_UNIFIED_MEMORY, "CL_DEVICE_HOST_UNIFIED_MEMORY");
+    InfoDevice<cl_command_queue_properties>::display(device_IDs[num_devices_index], CL_DEVICE_QUEUE_PROPERTIES, "CL_DEVICE_QUEUE_PROPERTIES");
+    InfoDevice<cl_device_exec_capabilities>::display(device_IDs[num_devices_index], CL_DEVICE_EXECUTION_CAPABILITIES, "CL_DEVICE_EXECUTION_CAPABILITIES");
 
     std::cout << "\n-------------------- END OF DEVICE PROPERTIES --------------------" << std::endl;
     std::cout << std::endl;
@@ -86,15 +115,12 @@ int main()
 {
     std::cout << "Hello from Convolution!" << std::endl;
 
-    // Initialize the matrix with random values
-    for (int y = 0; y < input_signal_height; y++) {
-        for (int x = 0; x < input_signal_width; x++) {
-            input_signal[y][x] = rand() % 5000;  // Random values
-        }
-    }
+    // Initialise matrix
+    InitialiseMatrix();
 
-    // Set the intended device
-    enum USING_DEVICE intended_device = DEDICATED_GRAPHICS;
+    // Set and check the intended device
+    enum USING_DEVICE intended_device = USING_DEVICE(INTENDED_DEVICE);
+    CheckIntendedDevice(intended_device);
 
     // Initialise variables
     cl_int err_num;
@@ -130,36 +156,19 @@ int main()
     err_num = clGetPlatformIDs(num_platforms, platform_IDs, NULL);
     CheckError((err_num != CL_SUCCESS) ? err_num : (num_platforms <= 0 ? -1 : CL_SUCCESS), "clGetPlatformIDs");
 
-    // Initialise platform index
-    cl_uint platform_index;
+    // Initialise selected platform index
     cl_uint selected_platform_index = 0;
-
-    auto determining_device = CPU;
-    auto retrieving_device = CPU;
+    cl_uint num_devices_index = 0;
 
     // Iterate through the platforms
-    for(platform_index = 0; platform_index < num_platforms; platform_index++){ 
+    for(cl_uint platform_index = 0; platform_index < num_platforms; platform_index++){ 
         // Initialise placeholder variables (default CPU)
         std::string device_type = {};
-        
-        // Create a platform handle and display properties
-        InfoPlatform current_platform;
-        DisplayPlatformProperties(platform_IDs, platform_index, current_platform);
-
-        // Check intended device to dertermine and retrieve
-        if(intended_device == DEDICATED_GRAPHICS){
-            determining_device = DEDICATED_GRAPHICS;
-            retrieving_device = DEDICATED_GRAPHICS;
-        } else if(intended_device == iGPU){
-            determining_device = iGPU;
-            retrieving_device = iGPU;
-
-            // Make sure platform is similar to CPU
-            
-        }
+        std::string temp_device_type = {};
+        bool found_device = false;
 
         // Determine the number of devices
-        err_num = clGetDeviceIDs(platform_IDs[platform_index], determining_device, 0, NULL, &num_devices);
+        err_num = clGetDeviceIDs(platform_IDs[platform_index], INTENDED_DEVICE, 0, NULL, &num_devices);
         if(err_num != CL_SUCCESS && err_num != CL_DEVICE_NOT_FOUND){
             CheckError(err_num, "clGetDeviceIDs");
         }else if(num_devices > 0){
@@ -167,18 +176,57 @@ int main()
             device_IDs = (cl_device_id*)alloca(sizeof(cl_device_id) * num_devices);
 
             // Retrieve the number of devices
-            err_num = clGetDeviceIDs(platform_IDs[platform_index], retrieving_device, num_devices, device_IDs, NULL);
+            err_num = clGetDeviceIDs(platform_IDs[platform_index], INTENDED_DEVICE, num_devices, device_IDs, NULL);
             CheckError(err_num, "clGetDeviceIDs");
 
-            // Display properties of the selected device
-            DisplayDeviceProperties(device_IDs, num_devices, device_type);
+            // Create a platform handle
+            InfoPlatform current_platform(platform_IDs[platform_index]);
 
-            // Check the intended device and re-initialise (if-necessary)
-            if(intended_device == DEDICATED_GRAPHICS && device_type == "CL_DEVICE_TYPE_GPU"){
-                selected_platform_index = platform_index;
-            } else if(intended_device == CPU && device_type == "CL_DEVICE_TYPE_CPU"){
-                selected_platform_index = platform_index;
+            // Initialise index variable
+            num_devices_index = 0;
+
+            // Iterate through devices
+            while(num_devices_index < num_devices){
+                // Get the device type
+                device_type = InfoDevice<cl_device_type>::GetDeviceType(device_IDs[num_devices_index]);
+
+                 // Get platform vendor
+                auto platform_vendor = current_platform.GetPlatformInfo(CL_PLATFORM_VENDOR);
+
+                // Check the intended device and display properties
+                if(intended_device == GPU && device_type == "CL_DEVICE_TYPE_GPU"){
+                    if(platform_vendor == "NVIDIA Corporation" || platform_vendor == "AMD(R) Corporation"){
+                        std::cout << "\nPlatform " << platform_index << ":" << std::endl;
+                        current_platform.Display();
+                        DisplayDeviceProperties(device_IDs, num_devices_index);
+                        
+                        selected_platform_index = platform_index;
+                        found_device = true;
+                    }
+                } else if(intended_device == iGPU && device_type == "CL_DEVICE_TYPE_GPU"){
+                    if(platform_vendor == "Intel(R) Corporation" || platform_vendor == "AMD(R) Corporation"){
+                        std::cout << "\nPlatform " << platform_index << ":" << std::endl;
+                        current_platform.Display();
+                        DisplayDeviceProperties(device_IDs, num_devices_index);
+                        
+                        selected_platform_index = platform_index;
+                        found_device = true;
+                    }
+                } else if(intended_device == CPU && device_type == "CL_DEVICE_TYPE_CPU"){
+                    std::cout << "\nPlatform " << platform_index << ":" << std::endl;
+                    current_platform.Display();
+                    DisplayDeviceProperties(device_IDs, num_devices_index);
+                    
+                    selected_platform_index = platform_index;
+                    found_device = true;
+                }
+
+                // Increment index
+                num_devices_index += 1;
             }
+
+            if(found_device)
+                break;
         }
     }
 
@@ -261,7 +309,7 @@ int main()
     clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
 
     // Get the duration
-    if(time_kernel){
+    if(TIME_KERNEL){
         double time_ms = (end - start) * 1e-6;
         std::cout << "Kernel execution time: " << time_ms << " ms" << std::endl;
         std::cout << "\n-------------------- END OF KERNEL EXEUCTION DETAILS --------------------" << std::endl;
