@@ -1,5 +1,12 @@
-# Add executable to the CMake framework
-add_executable(Convolution Convolution.cpp)
+# Function to correlate sources to header files
+function(collect_sources_from_headers source_var header_dir source_dir)
+    set(sources "")
+    foreach(header ${ARGN})
+        get_filename_component(name ${header} NAME_WE)
+        list(APPEND sources ${source_dir}/${name}.cpp)
+    endforeach()
+    set(${source_var} ${sources} PARENT_SCOPE)
+endfunction()
 
 # Find OpenCL package/installation
 find_package(OpenCL REQUIRED)
@@ -14,7 +21,19 @@ endif()
 # Set the OpenCL library
 set(OS_LIB OpenCL::OpenCL)
 
-# Include the directory with header files
+# List all headers used in this project
+set(HEADERS
+    include/InfoDevice.hpp
+    include/InfoPlatform.hpp
+)
+
+# Collect matching sources based on the headers
+collect_sources_from_headers(SOURCES include src include/InfoPlatform.hpp)
+
+# Add executable to the CMake framework
+add_executable(Convolution ${SOURCES} Convolution.cpp)
+
+# Include the directory with kernel files
 target_include_directories(Convolution PRIVATE kernel)
 target_include_directories(Convolution PRIVATE include)
 

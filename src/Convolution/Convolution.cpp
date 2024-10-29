@@ -5,10 +5,12 @@
 #include <iomanip>
 
 #include <InfoDevice.hpp>
+#include <InfoPlatform.hpp>
 
 // Enum
 enum USING_DEVICE {
     CPU = (1 << 1),
+    iGPU = (1 << 2),
     DEDICATED_GRAPHICS = (1 << 2)
     };
 
@@ -47,6 +49,17 @@ inline void CheckError(cl_int error, const char* name){
 void CL_CALLBACK contextCallback(const char* error_info, const void* private_info, size_t cb, void* user_data){
     std::cout << "Error orccured during context use: " << error_info << std::endl;
     exit(EXIT_FAILURE);
+}
+
+void DisplayPlatformProperties(cl_platform_id* platform_IDs, cl_uint platform_index, InfoPlatform& platform_handle){
+    // Display platform information
+    std::cout << "\nPLATFORM PROPERTIES:\n" << std::endl;
+
+    std::cout << "\nPlatform " << platform_index << ":" << std::endl;
+    platform_handle.DisplayPlatformInfo(platform_IDs[platform_index], CL_PLATFORM_PROFILE, "CL_PLATFORM_PROFILE");
+    platform_handle.DisplayPlatformInfo(platform_IDs[platform_index], CL_PLATFORM_NAME, "CL_PLATFORM_NAME");
+    platform_handle.DisplayPlatformInfo(platform_IDs[platform_index], CL_PLATFORM_VERSION, "CL_PLATFORM_VERSION");
+    platform_handle.DisplayPlatformInfo(platform_IDs[platform_index], CL_PLATFORM_VENDOR, "CL_PLATFORM_VENDOR");
 }
 
 void DisplayDeviceProperties(cl_device_id* device_IDs, cl_uint num_devices, std::string& device_type){
@@ -121,13 +134,32 @@ int main()
     cl_uint platform_index;
     cl_uint selected_platform_index = 0;
 
+    auto determining_device = CPU;
+    auto retrieving_device = CPU;
+
     // Iterate through the platforms
     for(platform_index = 0; platform_index < num_platforms; platform_index++){ 
         // Initialise placeholder variables (default CPU)
         std::string device_type = {};
+        
+        // Create a platform handle and display properties
+        InfoPlatform current_platform;
+        DisplayPlatformProperties(platform_IDs, platform_index, current_platform);
+
+        // Check intended device to dertermine and retrieve
+        if(intended_device == DEDICATED_GRAPHICS){
+            determining_device = DEDICATED_GRAPHICS;
+            retrieving_device = DEDICATED_GRAPHICS;
+        } else if(intended_device == iGPU){
+            determining_device = iGPU;
+            retrieving_device = iGPU;
+
+            // Make sure platform is similar to CPU
+            
+        }
 
         // Determine the number of devices
-        err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices);
+        err_num = clGetDeviceIDs(platform_IDs[platform_index], determining_device, 0, NULL, &num_devices);
         if(err_num != CL_SUCCESS && err_num != CL_DEVICE_NOT_FOUND){
             CheckError(err_num, "clGetDeviceIDs");
         }else if(num_devices > 0){
@@ -135,18 +167,18 @@ int main()
             device_IDs = (cl_device_id*)alloca(sizeof(cl_device_id) * num_devices);
 
             // Retrieve the number of devices
-            err_num = clGetDeviceIDs(platform_IDs[platform_index], CL_DEVICE_TYPE_ALL, num_devices, device_IDs, NULL);
+            err_num = clGetDeviceIDs(platform_IDs[platform_index], retrieving_device, num_devices, device_IDs, NULL);
             CheckError(err_num, "clGetDeviceIDs");
 
             // Display properties of the selected device
             DisplayDeviceProperties(device_IDs, num_devices, device_type);
-        }
 
-        // Check the intended device and re-initialise (if-necessary)
-        if(intended_device == DEDICATED_GRAPHICS && device_type == "CL_DEVICE_TYPE_GPU"){
-            selected_platform_index = platform_index;
-        } else if(intended_device == CPU && device_type == "CL_DEVICE_TYPE_CPU"){
-            selected_platform_index = platform_index;
+            // Check the intended device and re-initialise (if-necessary)
+            if(intended_device == DEDICATED_GRAPHICS && device_type == "CL_DEVICE_TYPE_GPU"){
+                selected_platform_index = platform_index;
+            } else if(intended_device == CPU && device_type == "CL_DEVICE_TYPE_CPU"){
+                selected_platform_index = platform_index;
+            }
         }
     }
 
