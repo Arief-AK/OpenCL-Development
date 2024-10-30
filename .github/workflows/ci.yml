@@ -30,9 +30,23 @@ jobs:
                 sudo apt update
                 sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers
 
-            - name: Build with CMake
+            - name: Discover and Build Applications
               run: |
-                mkdir -p build
-                cd build
-                cmake ..
-                cmake --build .
+                # Find each CMakeLists.txt file in the src directory
+                for app_dir in src/*; do
+                if [ -d "$app_dir" ] && [ -f "$app_dir/CMakeLists.txt" ]; then
+                    echo "Building application in $app_dir"
+                    mkdir -p build/$(basename "$app_dir")
+                    cd build/$(basename "$app_dir")
+                    cmake ../../"$app_dir"
+                    cmake --build .
+                    cd ../..
+                fi
+                done
+
+            # - name: Build with CMake
+            #   run: |
+            #     mkdir -p build
+            #     cd build
+            #     cmake ..
+            #     cmake --build .
