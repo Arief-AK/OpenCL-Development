@@ -122,11 +122,13 @@ cl_program CreateProgram(cl_context context, cl_device_id device, const char* fi
         std::cerr << buildLog;
         clReleaseProgram(program);
     }
+
+    return program;
 }
 
 bool SaveProgramBinary(cl_program program, cl_device_id device, const char* filename){
     // Initialise variables
-    cl_uint num_devices = 0;
+    cl_uint num_devices;
     cl_int err_num;
 
     // Query the number of devices attached to the program
