@@ -3,4 +3,5 @@ SUBDIRS(
     HelloWorldBinary
     PlatformContextDevices
     Convolution
+    BufferSubBuffers
 )
