@@ -9,44 +9,52 @@ on:
             - main
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  # Job to discover applications and build a matrix
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      applications: ${{ steps.discover.outputs.applications }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+      - name: Discover Applications
+        id: discover
+        run: |
+          # List directories with CMakeLists.txt in src/
+          apps=$(find src -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/CMakeLists.txt" \; -print | xargs -n 1 basename)
+          apps_json=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -s .)
+          echo "::set-output name=applications::${apps_json}"
 
-            - name: Setup CMake caching
-              uses: actions/cache@v4
-              with:
-                # Cache the CMake build directory
-                path: build
-                key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
-                restore-keys: |
-                    ${{ runner.os }}-cmake-
+  # Matrix job to build and test each application
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: ${{ fromJson(needs.setup.outputs.applications) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Install dependencies
-              run: |
-                sudo apt update
-                sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers
 
-            - name: Discover and Build Applications
-              run: |
-                # Find each CMakeLists.txt file in the src directory
-                for app_dir in src/*; do
-                if [ -d "$app_dir" ] && [ -f "$app_dir/CMakeLists.txt" ]; then
-                    echo "Building application in $app_dir"
-                    mkdir -p build/$(basename "$app_dir")
-                    cd build/$(basename "$app_dir")
-                    cmake ../../"$app_dir"
-                    cmake --build .
-                    cd ../..
-                fi
-                done
+      - name: Set up CMake cache
+        uses: actions/cache@v3
+        with:
+            # Cache directory is specific to each application for isolated builds
+            path: build/${{ matrix.app }}
+            # Use a unique key for each app and any updates to CMakeLists.txt to detect changes
+            key: ${{ runner.os }}-cmake-${{ matrix.app }}-${{ hashFiles('src/${{ matrix.app }}/CMakeLists.txt') }}
+            restore-keys: |
+                ${{ runner.os }}-cmake-${{ matrix.app }}-
 
-            # - name: Build with CMake
-            #   run: |
-            #     mkdir -p build
-            #     cd build
-            #     cmake ..
-            #     cmake --build .
+      - name: Build Application
+        run: |
+          mkdir -p build/${{ matrix.app }}
+          cd build/${{ matrix.app }}
+          cmake ../../src/${{ matrix.app }}
+          cmake --build .
