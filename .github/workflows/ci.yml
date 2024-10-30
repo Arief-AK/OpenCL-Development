@@ -1,0 +1,34 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: |
+                apt update
+                apt install -y cmake ocl-icd-opencl-dev opencl-headers
+
+            - name: Build with CMake
+              run: |
+                mkdir -p build
+                cd build
+                cmake ..
+                cmake --build .
+
+            - name: Run tests
+              run: |
+                cd build
+                ctests --output-on-failure
