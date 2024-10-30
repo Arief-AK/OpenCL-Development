@@ -15,6 +15,7 @@ set(OS_LIB OpenCL::OpenCL)
 add_executable(BufferSubBuffers BufferSubBuffers.cpp)
 
 # Include the directory with kernel file
+target_include_directories(BufferSubBuffers PRIVATE include)
 target_include_directories(BufferSubBuffers PRIVATE kernel)
 
 # Link the OpenCL library to the executable
