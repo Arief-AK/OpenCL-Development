@@ -328,10 +328,10 @@ int main(){
 
         // Save program binary
         std::cout << "Saving program binary" << std::endl;
-        if(!SaveProgramBinary(program, device, "HelloWorld.cl.bin")){
+        if(SaveProgramBinary(program, device, "HelloWorld.cl.bin") == false){
             std::cerr << "Failed to write to program binary" << std::endl;
             Cleanup(context, commandQueue, program, kernel, memObjects);
-            return -1;
+            return 1;
         }
     } else{
         std::cout << "Read program from binary" << std::endl;
