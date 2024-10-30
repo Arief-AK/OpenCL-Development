@@ -9,61 +9,28 @@ on:
             - main
 
 jobs:
-  # Job to discover applications and build a matrix
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      applications: ${{ steps.discover.outputs.applications }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    build:
+        runs-on: ubuntu-latest
 
-      - name: Discover Applications
-        id: discover
-        run: |
-            # List directories with CMakeLists.txt in src/
-            apps=$(find src -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/CMakeLists.txt" \; -print | xargs -n 1 basename)
-            
-            # Handle case where no applications are found
-            if [ -z "$apps" ]; then
-                echo "No applications found in src directory."
-                apps_json="[]"
-            else
-                apps_json=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -s .)
-            fi
-            
-            echo "Applications JSON: $apps_json" # Debug output to check JSON format
-            echo "::set-output name=applications::$apps_json"
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-  # Matrix job to build and test each application
-  build:
-    needs: setup
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        app: ${{ fromJson(needs.setup.outputs.applications) }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers
-
-      - name: Set up CMake cache
-        uses: actions/cache@v3
-        with:
-            # Cache directory is specific to each application for isolated builds
-            path: build/${{ matrix.app }}
-            # Use a unique key for each app and any updates to CMakeLists.txt to detect changes
-            key: ${{ runner.os }}-cmake-${{ matrix.app }}-${{ hashFiles('src/${{ matrix.app }}/CMakeLists.txt') }}
-            restore-keys: |
-                ${{ runner.os }}-cmake-${{ matrix.app }}-
-
-      - name: Build Application
-        run: |
-          mkdir -p build/${{ matrix.app }}
-          cd build/${{ matrix.app }}
-          cmake ../../src/${{ matrix.app }}
-          cmake --build .
+            - name: Setup CMake caching
+              uses: actions/cache@v4
+              with:
+                # Cache the CMake build directory
+                path: build
+                key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+                restore-keys: |
+                    ${{ runner.os }}-cmake-
+            - name: Install dependencies
+              run: |
+                sudo apt update
+                sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers
+            - name: Build with CMake
+              run: |
+                mkdir -p build
+                cd build
+                cmake ..
+                cmake --build .
