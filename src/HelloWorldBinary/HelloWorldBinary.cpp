@@ -42,6 +42,80 @@ cl_program CreateProgram(cl_context context, cl_device_id device, const char* fi
     }
 }
 
+bool SaveProgramBinary(cl_program program, cl_device_id device, const char* filename){
+    // Initialise variables
+    cl_uint num_devices = 0;
+    cl_int err_num;
+
+    // Query the number of devices attached to the program
+    err_num = clGetProgramInfo(program, CL_PROGRAM_NUM_DEVICES, sizeof(cl_uint), &num_devices, NULL);
+    if(err_num != CL_SUCCESS){
+        std::cerr << "Failed to get number of devices from program" << std::endl;
+        return false;
+    }
+
+    // Get all the devices attached to the program
+    cl_device_id* devices = new cl_device_id[num_devices];
+    err_num = clGetProgramInfo(program, CL_PROGRAM_DEVICES, sizeof(cl_device_id) * num_devices, devices, NULL);
+    if(err_num != CL_SUCCESS){
+        std::cerr << "Failed to get devices from the program" << std::endl;
+        delete [] devices;   // Perform cleanup
+        return false;
+    }
+
+    // Determine the size of the binaries from the program
+    size_t* program_binary_sizes = new size_t [num_devices];
+    err_num = clGetProgramInfo(program, CL_PROGRAM_BINARY_SIZES, sizeof(size_t) * num_devices, program_binary_sizes, NULL);
+    if(err_num != CL_SUCCESS){
+        std::cerr << "Failed to get binary sizes from devices attached to the program" << std::endl;
+        delete [] devices;  // Perform cleanup
+        delete [] program_binary_sizes; // Perform cleanup
+        return false;
+    }
+
+    // Prepare to store the program binaries respective to binary sizes of each device
+    unsigned char** program_binaries = new unsigned char*[num_devices];
+    for(cl_uint i = 0; i < num_devices; i++){
+        program_binaries[i] = new unsigned char[program_binary_sizes[i]];
+    }
+
+    // Get all program binaries
+    err_num = clGetProgramInfo(program, CL_PROGRAM_BINARIES, sizeof(unsigned char*) * num_devices, program_binaries, NULL);
+    if(err_num != CL_SUCCESS){
+        std::cerr << "Error getting binaries from the program" << std::endl;
+        
+        // Perform cleanup
+        delete [] devices;
+        delete [] program_binary_sizes;
+        for(cl_uint i = 0; i < num_devices; i++){
+            delete [] program_binaries[i];
+        }
+        delete [] program_binaries;
+        return false;
+    }
+
+    // Store the binaries for later use
+    for(cl_uint i = 0; i < num_devices; i++){
+        // Check if the binary matches the requested device from this function
+        if(devices[i] == device){
+            FILE* fp = fopen(filename, "wb");
+            fwrite(program_binaries[i], 1, program_binary_sizes[i], fp);
+            fclose(fp);
+            break;
+        }
+    }
+
+    // Perform cleanup
+    delete [] devices;
+    delete [] program_binary_sizes;
+    for(cl_uint i = 0; i < num_devices; i++){
+        delete [] program_binaries[i];
+    }
+    delete [] program_binaries;
+    
+    return true;
+}
+
 void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernel, cl_mem memObjects[3]){
     // Free all memory objects
     for (int i = 0; i < 3; i++){
