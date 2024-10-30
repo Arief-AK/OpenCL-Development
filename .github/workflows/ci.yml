@@ -16,6 +16,15 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            - name: Setup CMake caching
+              uses: actions/cache@v4
+              with:
+                # Cache the CMake build directory
+                path: build
+                key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+                restore-keys: |
+                    ${{ runner.os }}-cmake-
+
             - name: Install dependencies
               run: |
                 sudo apt update
