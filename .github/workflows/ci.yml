@@ -18,8 +18,8 @@ jobs:
 
             - name: Install dependencies
               run: |
-                apt update
-                apt install -y cmake ocl-icd-opencl-dev opencl-headers
+                sudo apt update
+                sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers
 
             - name: Build with CMake
               run: |
