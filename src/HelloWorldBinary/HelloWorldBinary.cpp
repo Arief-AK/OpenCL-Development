@@ -3,6 +3,88 @@
 #include <fstream>
 #include <sstream>
 
+// Constants
+const int ARRAY_SIZE = 1000;
+
+cl_context CreateContext(){
+    cl_int errNum;
+    cl_uint numPlatforms;
+    cl_platform_id firstPlatformId;
+    cl_context context = NULL;
+
+    // Select a platform to run on. For simplicity, we will pick the first available platform
+    errNum = clGetPlatformIDs(1, &firstPlatformId, &numPlatforms);
+    if (errNum != CL_SUCCESS){
+        std::cerr << "Failed to find any OpenCL platforms" << std::endl;
+        return NULL;
+    }
+
+    // Create an OpenCL context on the platform
+    cl_context_properties contextProperties[] = {
+        CL_CONTEXT_PLATFORM,
+        (cl_context_properties)firstPlatformId,
+        0
+    };
+
+    // Create an OpenCL context using the context and its properties
+    context = clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_GPU, NULL, NULL, &errNum);
+    if (errNum != CL_SUCCESS){
+        std::cerr << "Failed to create an OpenCL GPU context. Attempting to create CPU context" << std::endl;
+        
+        // Attempt to create CPU context
+        context = clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_CPU, NULL, NULL, &errNum);
+        if (errNum != CL_SUCCESS){
+            std::cerr << "Failed to create an OpenCL GPU context. Attempting to create CPU context" << std::endl;
+            return NULL;
+        }
+    }
+
+    // Return the context
+    return context;
+}
+
+cl_command_queue CreateCommandQueue(cl_context context, cl_device_id* device){
+    cl_int errNum;
+    cl_device_id *devices;
+    cl_command_queue commandQueue = NULL;
+    size_t deviceBufferSize = -1;
+
+    // Get the size of the buffer
+    errNum = clGetContextInfo(context, CL_CONTEXT_DEVICES, 0, NULL, &deviceBufferSize);
+    if(errNum != CL_SUCCESS){
+        std::cout << "Failed to get context information" << std::endl;
+        return NULL;
+    }
+
+    // Check the buffer size
+    if (deviceBufferSize <= 0){
+        std::cerr << "No devices available.";
+        return NULL;
+    }
+
+    // Allocate memory for the devices buffer
+    devices = new cl_device_id[deviceBufferSize / sizeof(cl_device_id)];
+    errNum = clGetContextInfo(context, CL_CONTEXT_DEVICES, deviceBufferSize, devices, NULL);
+    if (errNum != CL_SUCCESS){
+        delete [] devices;
+        std::cerr << "Failed to get device IDs";
+        return NULL;
+    }
+
+    // Choose to use the first available device
+    commandQueue = clCreateCommandQueue(context, devices[0], 0, NULL);
+    if (commandQueue == NULL){
+        delete [] devices;
+        std::cerr << "Failed to create commandQueue for device 0";
+        return NULL;
+    }
+
+    // Set the first avaialable device back to the host and return the command queue
+    *device = devices[0];
+    delete[] devices;
+    return commandQueue;
+}
+
 cl_program CreateProgram(cl_context context, cl_device_id device, const char* filename){
     // Initialise variables
     cl_int err_num;
@@ -165,6 +247,22 @@ cl_program CreateProgramFromBinary(cl_context context, cl_device_id device, cons
     }
 
     return program;
+}
+
+bool CreateMemoryObjects(cl_context context, cl_mem memObjects[3], float* a, float* b){
+    // Create the memory objects
+    memObjects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float) * ARRAY_SIZE, a, NULL);
+    memObjects[1] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float) * ARRAY_SIZE, b, NULL);
+    memObjects[2] = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(float) * ARRAY_SIZE, NULL, NULL);
+
+    // Check memory objects
+    if(memObjects[0] == NULL || memObjects[1] == NULL || memObjects[2] == NULL){
+        std::cerr << "Failed to create memory objects" << std::endl;
+        return false;
+    }
+
+    // If all goes well...
+    return true;
 }
 
 void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernel, cl_mem memObjects[3]){
