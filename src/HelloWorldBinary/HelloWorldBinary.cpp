@@ -116,6 +116,57 @@ bool SaveProgramBinary(cl_program program, cl_device_id device, const char* file
     return true;
 }
 
+cl_program CreateProgramFromBinary(cl_context context, cl_device_id device, const char* filename){
+    // Open the file
+    FILE *fp = fopen(filename, "rb");
+    if(fp == NULL){
+        std::cerr << "File " << filename << " does not exist" << std::endl;
+        return NULL;
+    }
+
+    // Determine the size of the binary
+    size_t binary_size;
+    fseek(fp, 0, SEEK_END);     // Moves the fp to the end of file
+    binary_size = ftell(fp);    // Retrieves the position of the fp from the beginning of the file -> gives the file size
+    rewind(fp);                 // Rewinds the fp to the beginning of the file for reading from the start for later
+
+    // Load the binary from disk
+    unsigned char* program_binary = new unsigned char[binary_size];
+    fread(program_binary, 1, binary_size, fp);
+    fclose(fp);
+
+    // Initialise OpenCL variables
+    cl_int err_num;
+    cl_program program;
+    cl_int binary_status;
+
+    // Create program using binary
+    program = clCreateProgramWithBinary(context, 1, &device, &binary_size, (const unsigned char**)&program_binary, &binary_status, &err_num);
+    delete [] program_binary;   // Perform cleanup
+    if(err_num != CL_SUCCESS){
+        std::cerr << "Failed to create program from binary" << std::endl;
+        return NULL;
+    }
+
+    if(binary_status != CL_SUCCESS){
+        std::cerr << "Invalid binary for device" << std::endl;
+        return NULL;
+    }
+
+    err_num = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+    if(err_num != CL_SUCCESS){
+        // Determine the error
+        char buildLog[16384];
+        clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, sizeof(buildLog), buildLog, NULL);
+        std::cerr << "Error in program: " << std::endl;
+        std::cerr << buildLog << std::endl;
+        clReleaseProgram(program);
+        return NULL;
+    }
+
+    return program;
+}
+
 void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernel, cl_mem memObjects[3]){
     // Free all memory objects
     for (int i = 0; i < 3; i++){
