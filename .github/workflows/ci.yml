@@ -21,10 +21,19 @@ jobs:
       - name: Discover Applications
         id: discover
         run: |
-          # List directories with CMakeLists.txt in src/
-          apps=$(find src -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/CMakeLists.txt" \; -print | xargs -n 1 basename)
-          apps_json=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -s .)
-          echo "::set-output name=applications::${apps_json}"
+            # List directories with CMakeLists.txt in src/
+            apps=$(find src -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/CMakeLists.txt" \; -print | xargs -n 1 basename)
+            
+            # Handle case where no applications are found
+            if [ -z "$apps" ]; then
+                echo "No applications found in src directory."
+                apps_json="[]"
+            else
+                apps_json=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -s .)
+            fi
+            
+            echo "Applications JSON: $apps_json" # Debug output to check JSON format
+            echo "::set-output name=applications::$apps_json"
 
   # Matrix job to build and test each application
   build:
