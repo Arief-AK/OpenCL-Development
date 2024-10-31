@@ -159,7 +159,7 @@ int main()
 
     // Initialise the input data
     if(USE_MAPPING){
-        std::cout << "Using buffer mapping to move data to and from buffer" << std::endl;
+        std::cout << "Using buffer mapping to initialise the buffer" << std::endl;
 
         cl_int* map_ptr = (cl_int*)clEnqueueMapBuffer(queues[0], buffers[0], CL_TRUE, CL_MAP_WRITE, 0, sizeof(cl_int) * NUM_BUFFER_ELEMENTS * num_devices, 0, NULL, NULL, &err_num);
         CheckError(err_num, "clEnqueueMapBuffer");
@@ -195,8 +195,25 @@ int main()
     // Wait for the events
     clWaitForEvents(events.size(), &events[0]);
 
-    // Read back the computed data
-    clEnqueueReadBuffer(queues[0], buffers[0], CL_TRUE, 0, sizeof(int) * NUM_BUFFER_ELEMENTS * num_devices, (void*)input_output, 0, NULL, NULL);
+    if(USE_MAPPING){
+        std::cout << "Using buffer mapping to read the calculated data" << std::endl;
+
+        // Map pointer to the buffer
+        cl_int* map_ptr = (cl_int*)clEnqueueMapBuffer(queues[0], buffers[0], CL_TRUE, CL_MAP_READ, 0, sizeof(cl_int) * NUM_BUFFER_ELEMENTS * num_devices, 0, NULL, NULL, &err_num);
+        CheckError(err_num, "clEnqueueMapBuffer");
+
+        // Retirieve the calculated output
+        for(unsigned int i = 0; i < NUM_BUFFER_ELEMENTS * num_devices; i++){
+            input_output[i] = map_ptr[i];
+        }
+
+        // Unmap the buffer and let the queue finish
+        err_num = clEnqueueUnmapMemObject(queues[0], buffers[0], map_ptr, 0, NULL, NULL);
+        clFinish(queues[0]);
+    } else{
+        // Read back the computed data
+        clEnqueueReadBuffer(queues[0], buffers[0], CL_TRUE, 0, sizeof(int) * NUM_BUFFER_ELEMENTS * num_devices, (void*)input_output, 0, NULL, NULL);
+    }
 
     // Display the output in rows
     for(unsigned int i = 0; i < num_devices; i++){
