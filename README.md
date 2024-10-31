@@ -35,6 +35,8 @@ sudo apt-get install ocl-icd-opencl-dev
 
 > [!NOTE]\
 > Ensure that `CMake` is properly installed and added to the `PATH` environment variable on your machine. See [CMake official documentation](https://cmake.org/download/).
+>
+>This project is developed using [visual studio code](https://code.visualstudio.com/) IDE. The [CMake Tools extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) is used extensively within the project development. It is highly recommended that users develop with VS code with this extension.
 
 ### Windows
 1. Within the root directory of the project, build the project using `CMake`. In this example, the `Debug` configuration is used.
