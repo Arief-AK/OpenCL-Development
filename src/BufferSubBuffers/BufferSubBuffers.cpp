@@ -10,6 +10,7 @@
 // CONSTANTS
 #define DEFAULT_PLATFORM 0
 #define NUM_BUFFER_ELEMENTS 10
+#define USE_MAPPING 1
 
 inline void CheckError(cl_int err, const char* name)
 {
@@ -156,8 +157,25 @@ int main()
         kernels.push_back(kernel);
     }
 
-    // Write input data
-    err_num = clEnqueueWriteBuffer(queues[0], buffers[0], CL_TRUE, 0, sizeof(int) * NUM_BUFFER_ELEMENTS * num_devices, (void*)input_output, 0, NULL, NULL);
+    // Initialise the input data
+    if(USE_MAPPING){
+        std::cout << "Using buffer mapping to move data to and from buffer" << std::endl;
+
+        cl_int* map_ptr = (cl_int*)clEnqueueMapBuffer(queues[0], buffers[0], CL_TRUE, CL_MAP_WRITE, 0, sizeof(cl_int) * NUM_BUFFER_ELEMENTS * num_devices, 0, NULL, NULL, &err_num);
+        CheckError(err_num, "clEnqueueMapBuffer");
+
+        // Initialise the mapping pointer
+        for(unsigned int i = 0; i < NUM_BUFFER_ELEMENTS * num_devices; i++){
+            map_ptr[i] = input_output[i];
+        }
+
+        // Unmap the memory object and let the queue finish
+        err_num = clEnqueueUnmapMemObject(queues[0], buffers[0], map_ptr, 0, NULL, NULL);
+        clFinish(queues[0]);
+    } else{
+        // Write input data
+        err_num = clEnqueueWriteBuffer(queues[0], buffers[0], CL_TRUE, 0, sizeof(int) * NUM_BUFFER_ELEMENTS * num_devices, (void*)input_output, 0, NULL, NULL);
+    }
 
     // Initialise vector of events
     std::vector<cl_event> events;
