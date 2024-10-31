@@ -4,4 +4,5 @@ SUBDIRS(
     PlatformContextDevices
     Convolution
     BufferSubBuffers
+    RectangularBuffers
 )
