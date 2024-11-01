@@ -1,4 +1,5 @@
 SUBDIRS(
+    2DImageFilter
     HelloWorld
     HelloWorldBinary
     PlatformContextDevices
