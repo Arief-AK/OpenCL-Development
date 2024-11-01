@@ -26,5 +26,19 @@ FreeImage.dll       ->      2DImageFilter\FreeImage\
 FreeImage.h         ->      2DImageFilter\FreeImage\include
 FreeImage.lib       ->      2DImageFilter\FreeImage\lib
 ```
+5. Head to the top-level `CMakeLists.txt` in `OpenCL-Development\CMakeLists.txt` and turn the option to build the application `ON`
+```shell
+# Add option to build 2DImageFilter application
+option(BUILD_2D_IMAGE_FILTER "Build the 2DImageFilter application" ON)
+```
+
+6. Head to the top-level of the project, delete the `build` cache and re-build with `CMake`
+```shell
+rm /build -r -force
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Debug
+```
 
 If all goes well, the program should compile now!

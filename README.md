@@ -39,12 +39,11 @@ sudo apt-get install ocl-icd-opencl-dev
 >This project is developed using [visual studio code](https://code.visualstudio.com/) IDE. The [CMake Tools extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) is used extensively within the project development. It is highly recommended that users develop with VS code with this extension.
 
 ### Windows
-1. Within the root directory of the project, build the project using `CMake`. In this example, the `Debug` configuration is used.
+1. Within the root directory of the project, build the project using `CMake`. In this example, the `Debug` configuration is used and option to not build `2DImageFilter` application is set (Due to external dependencies required). See [Installing FreeImage library on Windows](src/2DImageFilter/INSTALL-FreeImage-WINDOWS.md).
 ```shell
 mkdir build
-cd build
-cmake ..
-cmake --build . --config Debug
+cmake -S . -B build -DBUILD_2D_IMAGE_FILTER=OFF
+cmake --build build --config Debug
 ```
 
 2. Head to the application and run. For example, the `HelloWorld` application
@@ -54,11 +53,11 @@ cd .\src\HelloWorld\Debug
 ```
 
 ### Linux
-1. Within the root directory of the project, build the project using `CMake`
+1. Within the root directory of the project, build the project using `CMake`. The option to not build `2DImageFilter` application is set here as well. See [Installing FreeImage library on Linux](src/2DImageFilter/INSTALL-FreeImage-LINUX.md).
 ```shell
 mkdir build
+cmake -S . -B build -DBUILD_2D_IMAGE_FILTER=OFF
 cd build
-cmake ..
 make
 ```
 
