@@ -22,7 +22,7 @@ if(WIN32)
         message(STATUS "FreeImage library found: ${FREEIMAGE_LIBRARY}")
     else()
         message(FATAL_ERROR "FreeImage library not found at ${FREEIMAGE_LIBRARY}")
-        message(FATAL_ERROR "Please download the most updated version of FreeImage from https://freeimage.sourceforge.io/ and follow the INSTALL-FreeImage.md file")
+        message(FATAL_ERROR "Please follow the INSTALL-FreeImage-WINDOWS.md file")
     endif()
 
     include_directories(${FREEIMAGE_INCLUDE_DIR})
