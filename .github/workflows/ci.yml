@@ -28,8 +28,16 @@ jobs:
               run: |
                 sudo apt update
                 sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers libfreeimage3 libfreeimage-dev
+            
+            - name: Build FreeImage dependency
+              run: |
+                cd src/2DImageFilter/FreeImage/linux/FreeImage
+                cmake . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install_dir
+                cmake --build cmake-build-debug --config Debug --target install
+
             - name: Build with CMake
               run: |
+                cd ../../../../
                 mkdir -p build
                 cd build
                 cmake ..
