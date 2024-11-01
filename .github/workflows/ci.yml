@@ -27,7 +27,7 @@ jobs:
             - name: Install dependencies
               run: |
                 sudo apt update
-                sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers libfreeimage-dev
+                sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers libfreeimage3 libfreeimage-dev
             - name: Build with CMake
               run: |
                 mkdir -p build
