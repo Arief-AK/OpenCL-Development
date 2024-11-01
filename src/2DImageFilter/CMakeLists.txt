@@ -13,8 +13,18 @@ set(OS_LIB OpenCL::OpenCL)
 
 # Find FreeImage package
 if(WIN32)
+    # Set absolute paths to include and library directories
     set(FREEIMAGE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/src/2DImageFilter/FreeImage/include")
     set(FREEIMAGE_LIBRARY "${CMAKE_SOURCE_DIR}/src/2DImageFilter/FreeImage/lib/FreeImage.lib")
+    
+    # Check if the FreeImage library exists at the specified path
+    if(EXISTS "${FREEIMAGE_LIBRARY}")
+        message(STATUS "FreeImage library found: ${FREEIMAGE_LIBRARY}")
+    else()
+        message(FATAL_ERROR "FreeImage library not found at ${FREEIMAGE_LIBRARY}")
+        message(FATAL_ERROR "Please download the most updated version of FreeImage from https://freeimage.sourceforge.io/ and follow the INSTALL-FreeImage.md file")
+    endif()
+
     include_directories(${FREEIMAGE_INCLUDE_DIR})
 
 elseif(UNIX)
@@ -43,7 +53,7 @@ target_link_libraries(2DImageFilter ${OS_LIB})
 if(WIN32)
     message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR} "/Debug")
     target_link_libraries(2DImageFilter ${FREEIMAGE_LIBRARY})
-    configure_file(FreeImage/lib/FreeImage.lib ${CMAKE_CURRENT_BINARY_DIR}/Debug/FreeImage.lib COPYONLY)
+    configure_file(FreeImage/FreeImage.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/FreeImage.dll COPYONLY)
 elseif(UNIX AND NOT APPLE)
     message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(2DImageFilter FreeImage::FreeImage)
