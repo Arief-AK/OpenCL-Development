@@ -1,0 +1,3 @@
+[submodule "src/2DImageFilter/FreeImage/linux/FreeImage"]
+	path = src/2DImageFilter/FreeImage/linux/FreeImage
+	url = https://github.com/Arief-AK/FreeImage.git
