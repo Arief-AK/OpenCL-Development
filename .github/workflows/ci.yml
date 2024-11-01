@@ -32,6 +32,7 @@ jobs:
             - name: Build FreeImage dependency
               run: |
                 cd src/2DImageFilter/FreeImage/linux/FreeImage
+                ls -l
                 cmake . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install_dir
                 cmake --build cmake-build-debug --config Debug --target install
 
