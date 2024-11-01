@@ -15,6 +15,8 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                submodules: true
 
             - name: Setup CMake caching
               uses: actions/cache@v4
@@ -28,6 +30,11 @@ jobs:
               run: |
                 sudo apt update
                 sudo apt install -y cmake ocl-icd-opencl-dev opencl-headers libfreeimage3 libfreeimage-dev
+
+            - name: Update references
+              run: |
+                git pull --recurse-submodules
+                git submodule update --remote --recursive
             
             - name: Build FreeImage dependency
               run: |
