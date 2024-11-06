@@ -76,3 +76,12 @@ elseif(UNIX AND NOT APPLE)
     message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(2DImageFilter FreeImage::FreeImage)
 endif()
+
+# Move the kernel file(s) into the executable directory
+if(WIN32)
+    message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR} "/Debug")
+    configure_file(kernel/gaussian_filter.cl ${CMAKE_CURRENT_BINARY_DIR}/Debug/gaussian_filter.cl COPYONLY)
+elseif(UNIX AND NOT APPLE)
+    message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR})
+    configure_file(kernel/gaussian_filter.cl ${CMAKE_CURRENT_BINARY_DIR}/gaussian_filter.cl COPYONLY)
+endif()

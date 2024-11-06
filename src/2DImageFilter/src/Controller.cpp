@@ -31,7 +31,8 @@ std::vector<cl_platform_id> Controller::GetPlatforms()
     for(cl_uint i = 0; i < num_platforms; i++){
         m_platforms.push_back(platform_IDs[i]);
     }
-    
+
+    std::cout << "Found " << m_platforms.size() << " platforms" << std::endl;
     return m_platforms;
 }
 
@@ -39,7 +40,7 @@ std::vector<cl_device_id> Controller::GetDevices(cl_platform_id platform)
 {
     cl_int err_num;
     cl_device_id* devices;
-    std::vector<cl_device_id> m_devices;
+    std::vector<cl_device_id> m_devices = {};
 
     // Determine devices
     err_num = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices);
@@ -58,6 +59,7 @@ std::vector<cl_device_id> Controller::GetDevices(cl_platform_id platform)
         m_devices.push_back(devices[i]);
     }
 
+    std::cout << "Found " << m_devices.size() << " devices" << std::endl;
     return m_devices;
 }
 
@@ -65,20 +67,33 @@ cl_context Controller::CreateContext(cl_platform_id platform, std::vector<cl_dev
 {
     cl_int err_num;
     cl_context context;
-    cl_device_id* m_devices;
+    cl_device_id* m_devices = new cl_device_id[devices.size()];
     cl_context_properties context_properties[] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
 
-    cl_uint index = 0;
-    for (auto && device : devices){
-        m_devices[index] = device;
-        index +=1;
-    }
+    // Copy contents of devices vector to m_devices array
+    std::memcpy(m_devices, devices.data(), devices.size() * sizeof(cl_device_id));
 
     // Create context
     context = clCreateContext(context_properties, num_devices, m_devices, NULL, NULL, &err_num);
     CheckError(err_num, "clCreateContext");
 
+    std::cout << "Successfully created a context" << std::endl;
     return context;
+}
+
+cl_command_queue Controller::CreateCommandQueue(cl_context context, cl_device_id device)
+{
+    cl_command_queue command_queue;
+
+    // Create a command queue
+    command_queue = clCreateCommandQueue(context, device, 0, NULL);
+    if(command_queue == NULL){
+        std::cerr << "Failed to create CommandQueue" << std::endl;
+        return NULL;
+    }
+
+    std::cout << "Successfully created CommandQueue" << std::endl;
+    return command_queue;
 }
 
 cl_program Controller::CreateProgram(cl_context context, cl_device_id device, const char *filename)
@@ -120,7 +135,7 @@ cl_program Controller::CreateProgram(cl_context context, cl_device_id device, co
         return NULL;
     }
 
-    // Return the program
+    std::cout << "Successfully created a program" << std::endl;
     return program;
 }
 
@@ -132,6 +147,7 @@ cl_kernel Controller::CreateKernel(cl_program program, const char *kernel_name)
     kernel = clCreateKernel(program, kernel_name, &err_num);
     CheckError(err_num, "clCreateKernel");
 
+    std::cout << "Successfully created the " << kernel_name << " kernel" << std::endl;
     return cl_kernel();
 }
 

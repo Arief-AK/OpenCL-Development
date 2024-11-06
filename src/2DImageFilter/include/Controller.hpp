@@ -20,6 +20,7 @@ public:
     std::vector<cl_device_id> GetDevices(cl_platform_id platform);
 
     cl_context CreateContext(cl_platform_id platform, std::vector<cl_device_id> devices);
+    cl_command_queue CreateCommandQueue(cl_context context, cl_device_id device);
     cl_program CreateProgram(cl_context context, cl_device_id device, const char* filename);
     cl_kernel CreateKernel(cl_program program, const char* kernel_name);
 

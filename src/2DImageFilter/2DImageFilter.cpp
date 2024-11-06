@@ -8,6 +8,7 @@
 
 // CONSTANTS
 #define PLATFORM_INDEX 0
+#define DEVICE_INDEX 0
 
 cl_mem LoadImage(cl_context context, char* filename, int &width, int &height){
     // Initialise format and image from file
@@ -156,14 +157,6 @@ void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program progr
         clReleaseContext(context);
 }
 
-inline void CheckError(cl_int err, const char* name)
-{
-    if(err != CL_SUCCESS){
-        std::cerr << "Error: " << name << " (" << err << ")" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-}
-
 int main()
 {
     std::cout << "Hello from 2DImageFilter" << std::endl;
@@ -173,88 +166,42 @@ int main()
     std::cout << "FreeImage version: " << FreeImage_GetVersion() << std::endl;
 
     // Initialise OpenCL variables
-    // cl_int err_num;
-    // cl_uint num_platforms;
-    // cl_uint num_devices;
-
-    // cl_platform_id* platform_IDs;
-    // cl_device_id* device_IDs;
-
-    // cl_context context;
-    // cl_program program;
-
-    // Initialise Controller
     Controller controller;
 
     auto platforms = controller.GetPlatforms();
     for (auto && platform : platforms){
         controller.DisplayPlatformInformation(platform);
     }
+
+    // Inform user of chosen indexes for platform and device
+    std::cout << "\nApplication will use:\nPLATFORM INDEX:\t" << PLATFORM_INDEX << "\nDEVICE INDEX:\t" << DEVICE_INDEX << "\n" << std::endl;
     
-    // auto devices = controller.GetDevices(platforms[PLATFORM_INDEX]);
+    auto devices = controller.GetDevices(platforms[PLATFORM_INDEX]);
+    auto context = controller.CreateContext(platforms[PLATFORM_INDEX], devices);
+    auto command_queue = controller.CreateCommandQueue(context, devices[DEVICE_INDEX]);
+    auto program = controller.CreateProgram(context, devices[DEVICE_INDEX], "gaussian_filter.cl");
+    auto kernel = controller.CreateKernel(program, "gaussian_filter");
 
-    // // Determine platforms
-    // err_num = clGetPlatformIDs(0, NULL, &num_platforms);
-    // CheckError((err_num != CL_SUCCESS) ? err_num : (num_platforms <= 0 ? -1 : CL_SUCCESS), "clGetPlatformIDs");
+    // Query device for Image support
+    cl_bool image_support = CL_FALSE;
+    clGetDeviceInfo(devices[DEVICE_INDEX], CL_DEVICE_IMAGE_SUPPORT, sizeof(cl_bool), &image_support, NULL);
+    if(image_support != CL_TRUE){
+        std::cerr << "Device does not support images" << std::endl;
+        // TODO: Cleanup
+    }
+    std::cout << "Device supports images" << std::endl;
 
-    // // Allocate platforms
-    // platform_IDs = (cl_platform_id*)alloca(sizeof(cl_platform_id) * num_platforms);
-    // std::cout << "Number of platforms: " << num_platforms << std::endl;
-
-    // // Retrieve platforms
-    // err_num = clGetPlatformIDs(num_platforms, platform_IDs, NULL);
-    // CheckError((err_num != CL_SUCCESS) ? err_num : (num_platforms <= 0 ? -1 : CL_SUCCESS), "clGetPlatformIDs");
-
-    // Initialise platform handler
-    // InfoPlatform platform_info(platform_IDs[0]);
-    // platform_info.Display();
-
-    // // Determine devices
-    // err_num = clGetDeviceIDs(platform_IDs[0], CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices);
-    // if(err_num != CL_SUCCESS && err_num != CL_DEVICE_NOT_FOUND){
-    //     CheckError(err_num, "clGetDeviceIDs");
-    // }
-
-    // // Allocate devices
-    // device_IDs = (cl_device_id*)alloca(sizeof(cl_device_id) * num_devices);
-    
-    // // Retrieve devices
-    // err_num = clGetDeviceIDs(platform_IDs[0], CL_DEVICE_TYPE_ALL, num_devices, &device_IDs[0], NULL);
-    // CheckError(err_num, "clGetDeviceIDs");
-
-    // // Query device for Image support
-    // cl_bool image_support = CL_FALSE;
-    // clGetDeviceInfo(device_IDs[0], CL_DEVICE_IMAGE_SUPPORT, sizeof(cl_bool), &image_support, NULL);
-    // if(image_support != CL_TRUE){
-    //     std::cerr << "Device does not support images" << std::endl;
-    //     // TODO: Cleanup
-    // }
-    // std::cout << "Device supports images" << std::endl;
-
-    // // Prepare context properties
-    // cl_context_properties context_properties[] = {CL_CONTEXT_PLATFORM, (cl_context_properties)platform_IDs[0], 0};
-
-    // // Create context
-    // context = clCreateContext(context_properties, num_devices, device_IDs, NULL, NULL, &err_num);
-    // CheckError(err_num, "clCreateContext");
-
-    // // Create a program
-    // program = CreateProgram(context, device_IDs[0], "gaussian_filter.cl");
-
-    // // Create sampler object
-    // auto sampler = clCreateSampler(context, CL_FALSE, CL_ADDRESS_CLAMP_TO_EDGE, CL_FILTER_NEAREST, &err_num);
-    // if(err_num != CL_SUCCESS){
-    //     std::cerr << "Error creating OpenCL sampler object" << std::endl;
-    //     // TODO: Cleanup
-    //     return -1;
-    // }
-
-
-
-    // Create program
-    // Do something...
+    // Create sampler object
+    cl_int err_num;
+    auto sampler = clCreateSampler(context, CL_FALSE, CL_ADDRESS_CLAMP_TO_EDGE, CL_FILTER_NEAREST, &err_num);
+    if(err_num != CL_SUCCESS){
+        std::cerr << "Error creating OpenCL sampler object" << std::endl;
+        // TODO: Cleanup
+        return -1;
+    }
+    std::cout << "Succesfully created a sampler object" << std::endl;
 
     FreeImage_DeInitialise();
-    
+    std::cout << "\nProgram executed succesfully" << std::endl;
     return 0;
 }
