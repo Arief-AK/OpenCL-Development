@@ -51,10 +51,11 @@ endif()
 # List all headers used in this project
 set(HEADERS
     include/InfoPlatform.hpp
+    include/Controller.hpp
 )
 
 # Collect matching sources based on the headers
-collect_sources_from_headers(SOURCES include src include/InfoPlatform.hpp)
+collect_sources_from_headers(SOURCES include src ${HEADERS})
 
 # Add executable to the CMake framework
 add_executable(2DImageFilter ${SOURCES} 2DImageFilter.cpp)
