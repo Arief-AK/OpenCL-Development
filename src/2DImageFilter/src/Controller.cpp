@@ -148,7 +148,7 @@ cl_kernel Controller::CreateKernel(cl_program program, const char *kernel_name)
     CheckError(err_num, "clCreateKernel");
 
     std::cout << "Successfully created the " << kernel_name << " kernel" << std::endl;
-    return cl_kernel();
+    return kernel;
 }
 
 void Controller::DisplayPlatformInformation(cl_platform_id platform)

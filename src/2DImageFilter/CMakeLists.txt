@@ -85,3 +85,12 @@ elseif(UNIX AND NOT APPLE)
     message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR})
     configure_file(kernel/gaussian_filter.cl ${CMAKE_CURRENT_BINARY_DIR}/gaussian_filter.cl COPYONLY)
 endif()
+
+# Move the image into the executable directory
+if(WIN32)
+    message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR} "/Debug")
+    configure_file(image/blurry_photo.jpeg ${CMAKE_CURRENT_BINARY_DIR}/Debug/blurry_photo.jpeg COPYONLY)
+elseif(UNIX AND NOT APPLE)
+    message(STATUS "The executable is located in: " ${CMAKE_CURRENT_BINARY_DIR})
+    configure_file(image/blurry_photo.jpeg ${CMAKE_CURRENT_BINARY_DIR}/blurry_photo.jpeg COPYONLY)
+endif()
