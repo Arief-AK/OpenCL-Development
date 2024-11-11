@@ -73,30 +73,6 @@ size_t RoundUp(int group_size, int global_size){
     }
 }
 
-void Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernel, cl_mem memObjects[3]){
-    // Free all memory objects
-    for (int i = 0; i < 3; i++){
-        if (memObjects[i] != 0)
-            clReleaseMemObject(memObjects[i]);
-    }
-
-    // Free the command queues
-    if (commandQueue != 0)
-        clReleaseCommandQueue(commandQueue);
-
-    // Free the kernels
-    if (kernel != 0)
-        clReleaseKernel(kernel);
-
-    // Free the program objects
-    if (program != 0)
-        clReleaseProgram(program);
-
-    // Free the context
-    if (context != 0)
-        clReleaseContext(context);
-}
-
 int main(int argc, char** argv)
 {
     std::cout << "Hello from 2DImageFilter" << std::endl;
@@ -122,7 +98,6 @@ int main(int argc, char** argv)
     clGetDeviceInfo(devices[DEVICE_INDEX], CL_DEVICE_IMAGE_SUPPORT, sizeof(cl_bool), &image_support, NULL);
     if(image_support != CL_TRUE){
         std::cerr << "Device does not support images" << std::endl;
-        // TODO: Cleanup
     }
     std::cout << "Device supports images" << std::endl;
 
@@ -165,7 +140,7 @@ int main(int argc, char** argv)
     auto sampler = clCreateSampler(context, CL_FALSE, CL_ADDRESS_CLAMP_TO_EDGE, CL_FILTER_NEAREST, &err_num);
     if(err_num != CL_SUCCESS){
         std::cerr << "Error creating OpenCL sampler object" << std::endl;
-        // TODO: Cleanup
+        controller.Cleanup(context, command_queue, program, kernel, sampler, image_objects, 2);
         return 1;
     }
     std::cout << "Succesfully created a sampler object" << std::endl;
@@ -178,6 +153,7 @@ int main(int argc, char** argv)
     err_num |= clSetKernelArg(kernel, 4, sizeof(cl_int), &height);
     if(err_num != CL_SUCCESS){
         std::cerr << "Error setting kernel arguments." << std::endl;
+        controller.Cleanup(context, command_queue, program, kernel, sampler, image_objects, 2);
         return 1;
     }
     std::cout << "Successfully set kernel arguments" << std::endl;
@@ -190,7 +166,7 @@ int main(int argc, char** argv)
     err_num = clEnqueueNDRangeKernel(command_queue, kernel, 2, NULL, global_work_size, local_work_size, 0, NULL, NULL);
     if(err_num != CL_SUCCESS){
         std::cerr << "Error executing the kernel" << std::endl;
-        // TODO: Cleanup
+        controller.Cleanup(context, command_queue, program, kernel, sampler, image_objects, 2);
         return 1;
     }
     std::cout << "Successfully executed kernel" << std::endl;
@@ -209,7 +185,7 @@ int main(int argc, char** argv)
     }
     if(err_num != CL_SUCCESS){
         std::cerr << "Error reading the result buffer" << std::endl;
-        // TODO: Cleanup
+        controller.Cleanup(context, command_queue, program, kernel, sampler, image_objects, 2);
         return 1;
     }
     std::cout << "Successfully read the result buffer" << std::endl;
@@ -223,7 +199,7 @@ int main(int argc, char** argv)
     }
     if(!result){
         std::cerr << "Failed to save image to edited.jpeg" << std::endl;
-        // TODO: Cleanup
+        controller.Cleanup(context, command_queue, program, kernel, sampler, image_objects, 2);
         return 1;
     }
     std::cout << "Successfully saved image to edited.jpeg" << std::endl;
@@ -235,7 +211,7 @@ int main(int argc, char** argv)
     }
     if(err_num != CL_SUCCESS){
         std::cerr << "Failed to unmap the result buffer" << std::endl;
-        // TODO: Cleanup
+        controller.Cleanup(context, command_queue, program, kernel, sampler, image_objects, 2);
         return 1;
     }
 

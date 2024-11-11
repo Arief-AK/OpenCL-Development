@@ -156,3 +156,38 @@ void Controller::DisplayPlatformInformation(cl_platform_id platform)
     InfoPlatform platform_handler(platform);
     platform_handler.Display();
 }
+
+void Controller::Cleanup(cl_context context, cl_command_queue commandQueue, cl_program program, cl_kernel kernel, cl_sampler sampler, cl_mem *mem_objects, int num_mem_objects)
+{
+    std::cout << "Performing cleanup" << std::endl;
+
+    // Free all memory objects
+    if(num_mem_objects > 0){
+        for (int i = 0; i < num_mem_objects; i++){
+            if (mem_objects[i] != 0)
+                clReleaseMemObject(mem_objects[i]);
+        }
+    }
+
+    // Free the command queues
+    if (commandQueue != 0)
+        clReleaseCommandQueue(commandQueue);
+
+    // Free the kernels
+    if (kernel != 0)
+        clReleaseKernel(kernel);
+
+    // Free the program objects
+    if (program != 0)
+        clReleaseProgram(program);
+
+    // Free the context
+    if (context != 0)
+        clReleaseContext(context);
+
+    // Free the sampler
+    if (sampler != 0)
+        clReleaseSampler(sampler);
+
+    std::cout << "Succesfully cleaned environment" << std::endl;
+}
