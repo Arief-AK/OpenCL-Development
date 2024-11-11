@@ -47,6 +47,6 @@ jobs:
               run: |
                 cd /home/runner/work/OpenCL-Development/OpenCL-Development/
                 mkdir -p build
+                cmake -S . -B build -DBUILD_2D_IMAGE_FILTER=ON
                 cd build
-                cmake ..
-                cmake --build .
+                make
