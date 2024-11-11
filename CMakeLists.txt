@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5.0)
 project(OpenCLProject VERSION 0.1.0 LANGUAGES C CXX)
 
 # Add option to build 2DImageFilter application
-option(BUILD_2D_IMAGE_FILTER "Build the 2DImageFilter application" OFF)
+option(BUILD_2D_IMAGE_FILTER "Build the 2DImageFilter application" ON)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
