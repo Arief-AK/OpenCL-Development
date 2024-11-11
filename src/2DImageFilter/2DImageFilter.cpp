@@ -199,12 +199,12 @@ int main(int argc, char** argv)
     size_t origin[3] = {0, 0, 0};
     size_t region[3] = {width, height, 1};
     size_t row_pitch = 0;
-    char* buffer = new char [width * height * 4];
-    err_num = clEnqueueReadImage(command_queue, image_objects[1], CL_TRUE, origin, region, 0, 0, buffer, 0, NULL, NULL);
+    char* buffer;
 
     if(USE_MAPPING){
         buffer = (char*) clEnqueueMapImage(command_queue, image_objects[1], CL_TRUE, CL_MAP_READ, origin, region, &row_pitch, NULL, 0, NULL, NULL, &err_num);
     } else{
+        buffer = new char [width * height * 4];
         err_num = clEnqueueReadImage(command_queue, image_objects[1], CL_TRUE, origin, region, 0, 0, buffer, 0, NULL, NULL);
     }
     if(err_num != CL_SUCCESS){
