@@ -9,7 +9,7 @@
 // CONSTANTS
 #define PLATFORM_INDEX 0
 #define DEVICE_INDEX 0
-#define USE_MAPPING 1
+#define USE_MAPPING 0
 
 cl_mem LoadImage(cl_context context, char* filename, int &width, int &height){
     // Initialise format and image from file
@@ -27,7 +27,7 @@ cl_mem LoadImage(cl_context context, char* filename, int &width, int &height){
 
     // Allocate memory
     char *buffer = new char[width * height * 4];
-    memcpy(buffer, FreeImage_GetBits(image), width * height & 4);
+    std::memcpy(buffer, FreeImage_GetBits(image), width * height & 4);
 
     // Unload memory
     FreeImage_Unload(image);
